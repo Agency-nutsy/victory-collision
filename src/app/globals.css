@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 245, 241, 234;
+  --background-start-rgb: 26, 24, 21;
+  --background-end-rgb: 26, 24, 21;
+  
+  /* Defaults matching Signature Process warm dark palette */
+  --primary-color: #1A1815;
+  --secondary-color: #A8A093;
+  --accent-color: #B8935F;
+  --neutral-base: #F5F1EA;
+  --surface-color: #24211D;
+  --surface-input: #2A2621;
+  --border-dark: #38332C;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #1A1815;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #1A1815;
+}
+::-webkit-scrollbar-thumb {
+  background: #38332C;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
