@@ -14,21 +14,43 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  
+  // Loading screen states
+  const [loadingPhase, setLoadingPhase] = useState<'loading' | 'fading' | 'hidden'>('loading');
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setReducedMotion(prefersReducedMotion);
 
+    if (prefersReducedMotion) {
+      // If reduced motion, just hide the loader immediately since we won't play the video
+      setLoadingPhase('hidden');
+    } else {
+      // Fallback: hide loader after 5 seconds just in case video takes too long or fails
+      const fallback = setTimeout(() => {
+        setLoadingPhase('fading');
+        setTimeout(() => setLoadingPhase('hidden'), 500);
+      }, 5000);
+      return () => clearTimeout(fallback);
+    }
+  }, []);
+
+  const handleVideoReady = () => {
+    if (reducedMotion || loadingPhase !== 'loading') return;
+    
     const videoEl = videoRef.current;
-    if (prefersReducedMotion && videoEl) {
-      videoEl.pause();
-    } else if (videoEl) {
-      // Ensure autoplay starts cleanly without uncaught promise exceptions
-      videoEl.play().catch(() => {
-        // Autoplay may be deferred or blocked by browser power-saver mode; poster image handles this gracefully
-      });
+    if (videoEl) {
+      videoEl.play().catch(() => {});
     }
 
+    // Video starts playing, wait 0.2s before the loading screen begins to fade/end
+    setTimeout(() => {
+      setLoadingPhase('fading');
+      setTimeout(() => setLoadingPhase('hidden'), 500);
+    }, 200);
+  };
+
+  useEffect(() => {
     if (!containerRef.current || !textWrapperRef.current) return;
 
     if (prefersReducedMotion) {
@@ -87,12 +109,29 @@ export default function Hero() {
   const serviceCity = siteConfig.serviceArea?.[0] || "Los Angeles";
 
   return (
-    <section
-      ref={containerRef}
-      id="hero-section"
-      className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center"
-    >
-      {/* Background Media Container */}
+    <>
+      {/* Loading Screen Overlay */}
+      {loadingPhase !== 'hidden' && (
+        <div 
+          className={`fixed inset-0 z-[9999] bg-[#141210] flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out ${loadingPhase === 'fading' ? 'opacity-0' : 'opacity-100'}`}
+        >
+          <div className="flex flex-col items-center">
+            {/* Simple spinner */}
+            <div className="w-16 h-16 border-4 border-[#38332C] border-t-accent rounded-full animate-spin mb-6"></div>
+            <h2 className="text-2xl font-heading font-bold text-[#F5F1EA] tracking-widest uppercase">
+              {siteConfig.businessName}
+            </h2>
+            <p className="text-[#A8A093] mt-2 animate-pulse">Loading Experience...</p>
+          </div>
+        </div>
+      )}
+
+      <section
+        ref={containerRef}
+        id="hero-section"
+        className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center"
+      >
+        {/* Background Media Container */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         {/* Static poster fallback image shown under video / if video is loading or paused */}
         <img
@@ -108,9 +147,10 @@ export default function Hero() {
             ref={videoRef}
             src={videoSource}
             poster={posterSource}
-            autoPlay
-            loop
+            onCanPlayThrough={handleVideoReady}
+            onLoadedData={handleVideoReady} // Backup event in case CanPlayThrough doesn't fire immediately
             muted
+            loop
             playsInline
             preload="auto"
             aria-hidden="true"
