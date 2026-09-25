@@ -14,9 +14,9 @@ export default function ContactPage() {
       
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
-        <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-4">Contact Us</h1>
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-4">Get An Instant Estimate</h1>
         <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
-          Ready to book your appointment? Fill out the form below or give us a call.
+          Takes less than 30 seconds. Answer 3 quick questions and we'll text your quote.
         </p>
       </div>
 
