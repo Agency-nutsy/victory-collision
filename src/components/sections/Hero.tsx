@@ -53,6 +53,7 @@ export default function Hero() {
   useEffect(() => {
     if (!containerRef.current || !textWrapperRef.current) return;
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       gsap.set(textWrapperRef.current, { opacity: 1, y: 0 });
       return;
@@ -87,6 +88,7 @@ export default function Hero() {
     );
 
     // Subtle video parallax drift (moves slightly slower than scroll)
+    const videoEl = videoRef.current;
     if (videoEl) {
       scrollTl.to(
         videoEl,
@@ -211,5 +213,6 @@ export default function Hero() {
         </div>
       </div>
     </section>
+    </>
   );
 }
