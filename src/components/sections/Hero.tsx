@@ -129,8 +129,8 @@ export default function Hero() {
             {siteConfig.businessName}
           </span>
 
-          {/* Main headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tight mb-6 leading-[1.1] max-w-4xl text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+          {/* Main headline — one line, refined size */}
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-heading font-bold tracking-wide mb-6 leading-tight whitespace-nowrap text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
             {siteConfig.tagline}
           </h1>
 

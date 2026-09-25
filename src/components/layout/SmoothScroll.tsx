@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,15 +13,19 @@ export default function SmoothScroll({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  // Scroll to top on every client-side navigation
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
   useEffect(() => {
     // Disable the browser's built-in scroll restoration so it doesn't
     // remember the previous scroll position on refresh.
     if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-
-    // Force the page to the very top before Lenis takes over
-    window.scrollTo(0, 0);
 
     const lenis = new Lenis({
       duration: 1.2,
