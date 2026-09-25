@@ -14,6 +14,7 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   // Detect reduced motion preference and start video
   useEffect(() => {
@@ -21,6 +22,9 @@ export default function Hero() {
     setReducedMotion(mq.matches);
 
     if (!mq.matches && videoRef.current) {
+      if (videoRef.current.readyState >= 2) {
+        setVideoReady(true);
+      }
       videoRef.current.play().catch(() => {});
     }
   }, []);
@@ -95,7 +99,7 @@ export default function Hero() {
           fetchPriority="high"
         />
 
-        {/* Hero video — preloads aggressively in the background */}
+        {/* Hero video — preloads aggressively in the background, smoothly fades in when ready */}
         {!reducedMotion && (
           <video
             ref={videoRef}
@@ -106,7 +110,11 @@ export default function Hero() {
             playsInline
             preload="auto"
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none"
+            onPlaying={() => setVideoReady(true)}
+            onLoadedData={() => setVideoReady(true)}
+            className={`absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none transition-opacity duration-700 ease-out ${
+              videoReady ? "opacity-100" : "opacity-0"
+            }`}
           />
         )}
 
