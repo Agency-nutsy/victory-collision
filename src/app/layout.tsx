@@ -63,6 +63,20 @@ export default function RootLayout({
             __html: `(function(){
 if(location.pathname!=='/')return;
 window.__vcLoaderActive=true;
+try{
+  var lk=document.createElement('link');
+  lk.rel='preload';
+  lk.as='video';
+  lk.href='/videos/hero.mp4';
+  lk.type='video/mp4';
+  document.head.appendChild(lk);
+  var pv=document.createElement('video');
+  pv.src='/videos/hero.mp4';
+  pv.preload='auto';
+  pv.muted=true;
+  pv.playsInline=true;
+  pv.load();
+}catch(e){}
 var n=${JSON.stringify(siteConfig.businessName)};
 var pts=n.split(' & ');
 var el=document.createElement('div');

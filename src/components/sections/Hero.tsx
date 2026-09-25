@@ -21,11 +21,42 @@ export default function Hero() {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
 
-    if (!mq.matches && videoRef.current) {
-      if (videoRef.current.readyState >= 2) {
+    const videoEl = videoRef.current;
+    if (!mq.matches && videoEl) {
+      videoEl.muted = true;
+      videoEl.defaultMuted = true;
+      videoEl.playsInline = true;
+
+      const tryPlay = () => {
+        const p = videoEl.play();
+        if (p !== undefined) {
+          p.then(() => setVideoReady(true)).catch(() => {});
+        }
+      };
+
+      if (videoEl.readyState >= 2) {
         setVideoReady(true);
       }
-      videoRef.current.play().catch(() => {});
+
+      tryPlay();
+
+      // Mobile Safari / Chrome fallback: any touch or scroll ensures playback
+      const onUserInteraction = () => {
+        tryPlay();
+        window.removeEventListener("touchstart", onUserInteraction);
+        window.removeEventListener("scroll", onUserInteraction);
+        window.removeEventListener("click", onUserInteraction);
+      };
+
+      window.addEventListener("touchstart", onUserInteraction, { passive: true });
+      window.addEventListener("scroll", onUserInteraction, { passive: true });
+      window.addEventListener("click", onUserInteraction, { passive: true });
+
+      return () => {
+        window.removeEventListener("touchstart", onUserInteraction);
+        window.removeEventListener("scroll", onUserInteraction);
+        window.removeEventListener("click", onUserInteraction);
+      };
     }
   }, []);
 
@@ -105,6 +136,7 @@ export default function Hero() {
             ref={videoRef}
             src={videoSource}
             poster={posterSource}
+            autoPlay
             muted
             loop
             playsInline
@@ -112,6 +144,7 @@ export default function Hero() {
             aria-hidden="true"
             onPlaying={() => setVideoReady(true)}
             onLoadedData={() => setVideoReady(true)}
+            onCanPlay={() => setVideoReady(true)}
             className={`absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none transition-opacity duration-700 ease-out ${
               videoReady ? "opacity-100" : "opacity-0"
             }`}
