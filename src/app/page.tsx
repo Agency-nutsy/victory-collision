@@ -13,10 +13,13 @@ import StatsStrip from "@/components/sections/StatsStrip";
 import InsurancePartners from "@/components/sections/InsurancePartners";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import LocationMap from "@/components/sections/LocationMap";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function Home() {
   return (
     <>
+      {/* Loading screen overlay — always shows for 3s on every visit to home page */}
+      <LoadingScreen />
       <Hero />
       <StatsStrip />
       {/* Services Overview */}
