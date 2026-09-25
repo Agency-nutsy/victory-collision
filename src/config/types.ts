@@ -53,9 +53,9 @@ export interface FeaturedTransformation {
 }
 
 export interface BeforeAfterImage {
-  beforeUrl: string;
-  afterUrl: string;
-  alt: string;
+  beforeUrl?: string;
+  afterUrl?: string;
+  alt?: string;
 }
 
 export interface SiteConfig {
