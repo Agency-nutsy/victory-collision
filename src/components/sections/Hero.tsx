@@ -134,8 +134,8 @@ export default function Hero() {
             </div>
           )}
 
-          {/* Business name as main headline — original size -20%, one line */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight whitespace-nowrap text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+          {/* Business name as main headline — original size -20%, one line on desktop, clean wrap on mobile */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight whitespace-normal sm:whitespace-nowrap text-balance text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)] max-w-full px-2">
             {siteConfig.businessName}
           </h1>
 
