@@ -121,17 +121,9 @@ export default function Hero() {
           ref={textWrapperRef}
           className="flex flex-col items-center will-change-transform"
         >
-          {/* Business badge */}
-          <span
-            style={{ backgroundColor: "var(--primary-color)" }}
-            className="text-white px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase mb-6 shadow-xl border border-white/15 backdrop-blur-md inline-block"
-          >
+          {/* Business name as main headline — original size -20%, one line */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight whitespace-nowrap text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
             {siteConfig.businessName}
-          </span>
-
-          {/* Main headline — one line, refined size */}
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-heading font-bold tracking-wide mb-6 leading-tight whitespace-nowrap text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
-            {siteConfig.tagline}
           </h1>
 
           {/* Subtext */}
