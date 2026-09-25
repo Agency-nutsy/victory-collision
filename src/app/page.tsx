@@ -13,7 +13,14 @@ import StatsStrip from "@/components/sections/StatsStrip";
 import InsurancePartners from "@/components/sections/InsurancePartners";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import LocationMap from "@/components/sections/LocationMap";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import dynamic from "next/dynamic";
+
+// ssr: false — LoadingScreen checks window.__vcLoaderActive which only exists on client.
+// On initial load the inline script in layout.tsx handles the visual loader.
+// This component only activates for client-side navigation back to home.
+const LoadingScreen = dynamic(() => import("@/components/ui/LoadingScreen"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
