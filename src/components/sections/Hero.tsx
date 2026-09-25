@@ -18,23 +18,6 @@ export default function Hero() {
   // Loading screen states
   const [loadingPhase, setLoadingPhase] = useState<'loading' | 'fading' | 'hidden'>('loading');
 
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReducedMotion(prefersReducedMotion);
-
-    if (prefersReducedMotion) {
-      // If reduced motion, just hide the loader immediately since we won't play the video
-      setLoadingPhase('hidden');
-    } else {
-      // Fallback: hide loader after 5 seconds just in case video takes too long or fails
-      const fallback = setTimeout(() => {
-        setLoadingPhase('fading');
-        setTimeout(() => setLoadingPhase('hidden'), 500);
-      }, 5000);
-      return () => clearTimeout(fallback);
-    }
-  }, []);
-
   const handleVideoReady = () => {
     if (reducedMotion || loadingPhase !== 'loading') return;
     
@@ -51,6 +34,29 @@ export default function Hero() {
   };
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReducedMotion(prefersReducedMotion);
+
+    if (prefersReducedMotion) {
+      // If reduced motion, just hide the loader immediately since we won't play the video
+      setLoadingPhase('hidden');
+    } else {
+      const videoEl = videoRef.current;
+      // If video is already loaded from cache, trigger immediately
+      if (videoEl && videoEl.readyState >= 3) {
+        handleVideoReady();
+      }
+
+      // Fallback: hide loader after 5 seconds just in case video takes too long or fails
+      const fallback = setTimeout(() => {
+        setLoadingPhase('fading');
+        setTimeout(() => setLoadingPhase('hidden'), 500);
+      }, 5000);
+      return () => clearTimeout(fallback);
+    }
+  }, [loadingPhase, reducedMotion]);
+
+  useEffect(() => {
     if (!containerRef.current || !textWrapperRef.current) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -59,50 +65,42 @@ export default function Hero() {
       return;
     }
 
-    // 1. Immediate entrance animation on mount (visible on page load, no scroll trigger needed)
-    const entranceTl = gsap.fromTo(
-      textWrapperRef.current,
-      { opacity: 0, y: 24, scale: 0.98 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out", delay: 0.1 }
-    );
-
-    // 2. Simple, clean scroll behavior: text fades up/out as user scrolls past hero
-    const scrollTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.5,
-      },
-    });
-
-    // Text fades out smoothly
-    scrollTl.to(
-      textWrapperRef.current,
-      {
-        opacity: 0,
-        y: -45,
-        ease: "none",
-      },
-      0
-    );
-
-    // Subtle video parallax drift (moves slightly slower than scroll)
-    const videoEl = videoRef.current;
-    if (videoEl) {
-      scrollTl.to(
-        videoEl,
-        {
-          y: "14%",
-          ease: "none",
-        },
-        0
+    const ctx = gsap.context(() => {
+      // 1. Immediate entrance animation on mount
+      gsap.fromTo(
+        textWrapperRef.current,
+        { opacity: 0, y: 24, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out", delay: 0.1 }
       );
-    }
+
+      // 2. Simple, clean scroll behavior: text fades up/out as user scrolls past hero
+      const scrollTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.5,
+        },
+      });
+
+      // Text fades out smoothly
+      scrollTl.to(textWrapperRef.current, { opacity: 0, y: -45, ease: "none" }, 0);
+
+      // Subtle video parallax drift (moves slightly slower than scroll)
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        scrollTl.to(videoEl, { y: "14%", ease: "none" }, 0);
+      }
+    }, containerRef);
+
+    // Refresh ScrollTrigger to account for any React layout shifts during client routing
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
 
     return () => {
-      entranceTl.kill();
-      scrollTl.kill();
+      ctx.revert();
+      clearTimeout(refreshTimer);
     };
   }, []);
 
