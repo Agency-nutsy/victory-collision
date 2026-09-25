@@ -116,11 +116,24 @@ export default function Hero() {
       </div>
 
       {/* ── Hero content ── */}
-      <div className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center pt-16 sm:pt-20">
+      <div className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center pt-12 sm:pt-16">
         <div
           ref={textWrapperRef}
           className="flex flex-col items-center will-change-transform"
         >
+          {/* Logo above hero text */}
+          {siteConfig.logoUrl && (
+            <div className="mb-6 relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-[#D4AF37]/20 blur-xl rounded-full scale-125 pointer-events-none" />
+              <img
+                src={siteConfig.logoUrl}
+                alt={siteConfig.businessName}
+                className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.85)]"
+                loading="eager"
+              />
+            </div>
+          )}
+
           {/* Business name as main headline — original size -20%, one line */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight mb-6 leading-tight whitespace-nowrap text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
             {siteConfig.businessName}

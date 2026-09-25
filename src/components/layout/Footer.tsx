@@ -10,7 +10,16 @@ export default function Footer() {
           
           {/* Brand Info */}
           <div>
-            <h2 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-4">{siteConfig.businessName}</h2>
+            <div className="flex items-center gap-3 mb-4">
+              {siteConfig.logoUrl && (
+                <img
+                  src={siteConfig.logoUrl}
+                  alt={siteConfig.businessName}
+                  className="h-10 w-10 object-contain drop-shadow"
+                />
+              )}
+              <h2 className="text-2xl font-heading font-bold text-[#F5F1EA]">{siteConfig.businessName}</h2>
+            </div>
             <p className="text-sm text-[#A8A093] mb-6 max-w-sm leading-relaxed">{siteConfig.tagline}</p>
             <div className="flex space-x-4">
               {siteConfig.socialLinks.facebook && (

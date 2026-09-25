@@ -15,8 +15,15 @@ export default function Navbar() {
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="font-heading font-bold text-2xl text-[#F5F1EA]">
-              {siteConfig.businessName}
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 font-heading font-bold text-lg sm:text-xl md:text-2xl text-[#F5F1EA]">
+              {siteConfig.logoUrl && (
+                <img
+                  src={siteConfig.logoUrl}
+                  alt={siteConfig.businessName}
+                  className="h-9 w-9 sm:h-10 sm:w-10 object-contain drop-shadow"
+                />
+              )}
+              <span className="truncate max-w-[220px] sm:max-w-none">{siteConfig.businessName}</span>
             </Link>
           </div>
 

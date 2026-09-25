@@ -74,7 +74,20 @@ export default function LoadingScreen() {
         fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
       }}
     >
-      <div style={{ textAlign: "center", marginBottom: "40px" }}>
+      <div style={{ textAlign: "center", marginBottom: "40px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {siteConfig.logoUrl && (
+          <img
+            src={siteConfig.logoUrl}
+            alt={siteConfig.businessName}
+            style={{
+              width: "72px",
+              height: "72px",
+              objectFit: "contain",
+              marginBottom: "16px",
+              filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.8))",
+            }}
+          />
+        )}
         <h1
           style={{
             color: "#F5F1EA",

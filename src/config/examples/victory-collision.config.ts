@@ -16,7 +16,7 @@ import { SiteConfig } from '../types';
 export const victoryCollisionConfig: SiteConfig = {
   businessName: "Victory Collision & Auto Repair",
   tagline: "Expert Collision & Auto Repair.",
-  logoUrl: "/images/logo-placeholder.png", // TODO: Need real logo
+  logoUrl: "/images/logo.png",
   phone: "(516) 830-5997",
   email: "info@victorycollision.com", // Placeholder
   address: "2215 Jericho Tpke",
