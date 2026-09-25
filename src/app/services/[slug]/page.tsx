@@ -168,7 +168,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 </div>
                 <p className="text-xl md:text-2xl text-[#E6E1D8] font-medium italic mb-8 relative z-10 leading-relaxed">"{specificTestimonial.text}"</p>
                 <div className="relative z-10">
-                  <p className="font-bold text-lg text-[#F5F1EA] font-heading">{specificTestimonial.name || specificTestimonial.author}</p>
+                  <p className="font-bold text-lg text-[#F5F1EA] font-heading">{specificTestimonial.name}</p>
                   <p className="text-sm text-[#A8A093] font-medium">{specificTestimonial.date}</p>
                 </div>
               </div>

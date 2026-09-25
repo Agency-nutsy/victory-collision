@@ -108,7 +108,7 @@ export default function ContactPage() {
               loading="lazy" 
               allowFullScreen 
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(siteConfig.businessName + ', ' + siteConfig.city + ', ' + siteConfig.state)}`}
+              src={siteConfig.googleMapsEmbedUrl}
               className="grayscale contrast-125 brightness-75 invert" // Invert map slightly to fit dark theme
             ></iframe>
           </div>

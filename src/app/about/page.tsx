@@ -105,7 +105,7 @@ export default function AboutPage() {
                   </div>
                   <p className="text-[#E6E1D8] italic mb-6 flex-grow text-lg leading-relaxed">"{testimonial.text}"</p>
                   <div className="mt-auto">
-                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.author}</p>
+                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
                     <p className="text-sm text-[#A8A093]">{testimonial.service} • {testimonial.date}</p>
                   </div>
                 </div>

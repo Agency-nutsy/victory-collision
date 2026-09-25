@@ -1,0 +1,3795 @@
+================================================================================
+PROJECT CODE DUMP: Car Detailing Template
+Generated: 2026-09-25T13:03:45.003Z
+Total Files: 50
+================================================================================
+
+TABLE OF CONTENTS:
+1. copy-images.js
+2. download-black-car.js
+3. download-dirty-black-car.js
+4. download-dirty-car.js
+5. fix-slider.js
+6. generate-placeholders.js
+7. next-env.d.ts
+8. next.config.mjs
+9. package.json
+10. postcss.config.mjs
+11. src/app/about/page.tsx
+12. src/app/blog/[slug]/page.tsx
+13. src/app/contact/page.tsx
+14. src/app/globals.css
+15. src/app/layout.tsx
+16. src/app/not-found.tsx
+17. src/app/page.tsx
+18. src/app/services/[slug]/page.tsx
+19. src/app/services/page.tsx
+20. src/app/template.tsx
+21. src/components/3d/CarHero.tsx
+22. src/components/3d/Scene.tsx
+23. src/components/animations/AnimatedCounter.tsx
+24. src/components/animations/MagneticButton.tsx
+25. src/components/animations/MiniCar.tsx
+26. src/components/animations/ScrollProgress.tsx
+27. src/components/animations/TiltCard.tsx
+28. src/components/contact/BookingForm.tsx
+29. src/components/contact/ContactForm.tsx
+30. src/components/layout/Footer.tsx
+31. src/components/layout/Navbar.tsx
+32. src/components/layout/SmoothScroll.tsx
+33. src/components/sections/FeaturedTransformationSection.tsx
+34. src/components/sections/Hero.tsx
+35. src/components/sections/Marquee.tsx
+36. src/components/sections/PricingTable.tsx
+37. src/components/sections/ProcessTimeline.tsx
+38. src/components/sections/ReviewSummary.tsx
+39. src/components/sections/TrustBadges.tsx
+40. src/components/ui/BeforeAfterSlider.tsx
+41. src/components/ui/CustomCursor.tsx
+42. src/components/ui/NoiseOverlay.tsx
+43. src/config/examples/detailing.config.ts
+44. src/config/examples/mechanic.config.ts
+45. src/config/examples/victory-collision.config.ts
+46. src/config/site.config.ts
+47. src/config/types.ts
+48. src/utils/motion.ts
+49. tailwind.config.ts
+50. tsconfig.json
+
+================================================================================
+
+================================================================================
+FILE: copy-images.js
+================================================================================
+const fs = require('fs');
+const path = require('path');
+
+const srcBefore = 'C:\\Users\\Tushar\\.gemini\\antigravity-ide\\brain\\37561bea-e702-4073-9033-412a23f99b36\\.user_uploaded\\media_1788416171954.jpg';
+const srcAfter = 'C:\\Users\\Tushar\\.gemini\\antigravity-ide\\brain\\37561bea-e702-4073-9033-412a23f99b36\\.user_uploaded\\media_1788416176978.jpg';
+const destBefore = path.join(__dirname, 'public', 'images', 'gallery', 'home-before.jpg');
+const destAfter = path.join(__dirname, 'public', 'images', 'gallery', 'home-after.jpg');
+
+const dir = path.join(__dirname, 'public', 'images', 'gallery');
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+fs.copyFileSync(srcBefore, destBefore);
+fs.copyFileSync(srcAfter, destAfter);
+console.log('Home page images copied successfully!');
+
+
+================================================================================
+FILE: download-black-car.js
+================================================================================
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// A nice unpolished/dull black car photo
+const url = 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&q=80';
+const filepath = path.join(__dirname, 'public/images/gallery/paint-correction-before.jpg');
+
+const options = {
+  headers: {
+    // Spoofing a real browser to bypass Unsplash's anti-bot 404s
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+  }
+};
+
+const downloadImage = (url, filepath) => {
+  return new Promise((resolve, reject) => {
+    https.get(url, options, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadImage(res.headers.location, filepath).then(resolve).catch(reject);
+      }
+      if (res.statusCode === 200) {
+        res.pipe(fs.createWriteStream(filepath))
+           .on('error', reject)
+           .once('close', () => resolve(filepath));
+      } else {
+        res.resume();
+        reject(new Error(`Status Code: ${res.statusCode}`));
+      }
+    }).on('error', reject);
+  });
+};
+
+console.log('Downloading a slightly unpolished black car image for the "Before" slider...');
+downloadImage(url, filepath)
+  .then(() => console.log('Success! The "Before" image is now a different black car. Refresh your browser!'))
+  .catch((err) => console.error('Download failed:', err.message));
+
+
+================================================================================
+FILE: download-dirty-black-car.js
+================================================================================
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// Unsplash image of a genuinely dirty, dusty car
+const url = 'https://images.unsplash.com/photo-1550524614-ea675ab5e4d2?w=800&q=80';
+const filepath = path.join(__dirname, 'public/images/gallery/paint-correction-before.jpg');
+
+const options = {
+  headers: {
+    // Spoofing a real browser to bypass Unsplash's anti-bot 404s
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+  }
+};
+
+const downloadImage = (url, filepath) => {
+  return new Promise((resolve, reject) => {
+    https.get(url, options, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadImage(res.headers.location, filepath).then(resolve).catch(reject);
+      }
+      if (res.statusCode === 200) {
+        res.pipe(fs.createWriteStream(filepath))
+           .on('error', reject)
+           .once('close', () => resolve(filepath));
+      } else {
+        res.resume();
+        reject(new Error(`Status Code: ${res.statusCode}`));
+      }
+    }).on('error', reject);
+  });
+};
+
+console.log('Downloading a very dirty car image for the "Before" slider...');
+downloadImage(url, filepath)
+  .then(() => console.log('Success! The "Before" image is now a dirty car. Refresh your browser!'))
+  .catch((err) => console.error('Download failed:', err.message));
+
+
+================================================================================
+FILE: download-dirty-car.js
+================================================================================
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// Unsplash image of a very dirty/rusty old car
+const url = 'https://images.unsplash.com/photo-1453491945771-a1e904948959?w=800&q=80';
+const filepath = path.join(__dirname, 'public/images/gallery/paint-correction-before.jpg');
+
+const downloadImage = (url, filepath) => {
+  return new Promise((resolve, reject) => {
+    https.get(url, { headers: { 'User-Agent': 'Node.js' } }, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadImage(res.headers.location, filepath).then(resolve).catch(reject);
+      }
+      if (res.statusCode === 200) {
+        res.pipe(fs.createWriteStream(filepath))
+           .on('error', reject)
+           .once('close', () => resolve(filepath));
+      } else {
+        res.resume();
+        reject(new Error(`Status Code: ${res.statusCode}`));
+      }
+    }).on('error', reject);
+  });
+};
+
+console.log('Downloading a dirty car image for the "Before" slider...');
+downloadImage(url, filepath)
+  .then(() => console.log('Success! The "Before" image is now suitably dirty. Refresh your browser!'))
+  .catch((err) => console.error('Download failed:', err.message));
+
+
+================================================================================
+FILE: fix-slider.js
+================================================================================
+const fs = require('fs');
+const path = require('path');
+
+const srcAfter = path.join(__dirname, 'public/images/hero-mercedes.png');
+const destAfter = path.join(__dirname, 'public/images/gallery/paint-correction-after.jpg');
+
+const srcBefore = path.join(__dirname, 'public/images/services/ceramic-coating.jpg');
+const destBefore = path.join(__dirname, 'public/images/gallery/paint-correction-before.jpg');
+
+try {
+  fs.copyFileSync(srcAfter, destAfter);
+  console.log('Success: Copied hero-mercedes.png to paint-correction-after.jpg');
+  
+  fs.copyFileSync(srcBefore, destBefore);
+  console.log('Success: Copied ceramic-coating.jpg to paint-correction-before.jpg');
+  
+  console.log('All done! The Before/After slider is now fully fixed.');
+} catch (err) {
+  console.error('Error copying files:', err);
+}
+
+
+================================================================================
+FILE: generate-placeholders.js
+================================================================================
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+const imagesToGenerate = [
+  { path: 'public/images/gallery/paint-correction-before.jpg', url: 'https://images.unsplash.com/photo-1550524614-ea675ab5e4d2?w=800&q=80' },
+  { path: 'public/images/gallery/paint-correction-after.jpg', url: 'https://images.unsplash.com/photo-1612089291168-38c2323ccfb6?w=800&q=80' },
+  { path: 'public/images/gallery/interior-before.jpg', url: 'https://images.unsplash.com/photo-1610647752706-3bb12232b3ab?w=800&q=80' },
+  { path: 'public/images/services/diagnostics.jpg', url: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80' }
+];
+
+const downloadImage = (url, filepath) => {
+  return new Promise((resolve, reject) => {
+    https.get(url, { headers: { 'User-Agent': 'Node.js' } }, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadImage(res.headers.location, filepath).then(resolve).catch(reject);
+      }
+      if (res.statusCode === 200) {
+        res.pipe(fs.createWriteStream(filepath))
+           .on('error', reject)
+           .once('close', () => resolve(filepath));
+      } else {
+        res.resume();
+        reject(new Error(`Status Code: ${res.statusCode}`));
+      }
+    }).on('error', reject);
+  });
+};
+
+async function generateAll() {
+  for (const img of imagesToGenerate) {
+    const fullPath = path.join(__dirname, img.path);
+    const dir = path.dirname(fullPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    
+    console.log(`Downloading ${img.path}...`);
+    try {
+      await downloadImage(img.url, fullPath);
+      console.log(`Success: ${img.path}`);
+    } catch (err) {
+      console.error(`Error downloading ${img.path}:`, err.message);
+    }
+  }
+  console.log('All downloads complete.');
+}
+
+generateAll();
+
+
+================================================================================
+FILE: next-env.d.ts
+================================================================================
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
+
+================================================================================
+FILE: next.config.mjs
+================================================================================
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      }
+    ],
+  },
+};
+
+export default nextConfig;
+
+
+================================================================================
+FILE: package.json
+================================================================================
+{
+  "name": "car-detailing-template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "9.112.0",
+    "@react-three/fiber": "8.17.10",
+    "clsx": "2.1.1",
+    "framer-motion": "11.5.4",
+    "gsap": "3.12.5",
+    "lenis": "1.1.13",
+    "lucide-react": "0.439.0",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tailwind-merge": "2.5.2",
+    "three": "0.167.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.5",
+    "@types/react": "18.3.5",
+    "@types/react-dom": "18.3.0",
+    "@types/three": "0.167.0",
+    "autoprefixer": "10.4.19",
+    "eslint": "8.57.1",
+    "eslint-config-next": "14.2.5",
+    "postcss": "8.4.45",
+    "tailwindcss": "3.4.11",
+    "typescript": "5.5.4"
+  }
+}
+
+================================================================================
+FILE: postcss.config.mjs
+================================================================================
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+
+
+================================================================================
+FILE: src/app/about/page.tsx
+================================================================================
+import { siteConfig } from "@/config/site.config";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Star } from "lucide-react";
+import TrustBadges from "@/components/sections/TrustBadges";
+import ReviewSummary from "@/components/sections/ReviewSummary";
+import TiltCard from "@/components/animations/TiltCard";
+import MagneticButton from "@/components/animations/MagneticButton";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: `Learn more about ${siteConfig.businessName} and our experienced team.`,
+};
+
+export default function AboutPage() {
+  return (
+    <div className="pt-32 pb-0 bg-[#1A1815] text-[#F5F1EA]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-4">About {siteConfig.businessName}</h1>
+          <p className="text-xl text-[#A8A093] max-w-3xl mx-auto leading-relaxed">
+            Providing top-tier automotive services with a commitment to excellence and customer satisfaction.
+          </p>
+        </div>
+
+        {/* Story Section */}
+        <div className="bg-[#24211D] rounded-3xl p-8 md:p-12 mb-24 shadow-xl border border-[#38332C]">
+          <h2 className="text-3xl font-heading font-bold text-[#F5F1EA] mb-6">Our Story</h2>
+          <div className="space-y-6 text-[#E6E1D8] text-lg leading-relaxed max-w-none">
+            <p>
+              For over {siteConfig.trustSignals.yearsInBusiness} years, {siteConfig.businessName} has been the trusted choice for automotive care in {siteConfig.city} and surrounding areas. We started with a simple mission: to provide honest, high-quality service that our community can rely on.
+            </p>
+            <p>
+              Our facility is equipped with state-of-the-art tools, and our team stays up-to-date with the latest industry standards and techniques. Whether you're coming in for a routine check-up or a comprehensive detailing package, we treat every vehicle as if it were our own.
+            </p>
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div>
+          <div className="text-center mb-12">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Our People</h2>
+            <h3 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA]">Meet Our Experts</h3>
+          </div>
+          
+          <div className={`grid grid-cols-1 ${siteConfig.teamMembers.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3' : 'max-w-md mx-auto'} gap-8`}>
+            {siteConfig.teamMembers.map((member, index) => (
+              <div key={index} className="bg-[#24211D] border border-[#38332C] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all">
+                <div className="h-72 bg-[#1A1815] relative overflow-hidden">
+                  <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold font-heading text-[#F5F1EA]">{member.name}</h3>
+                  <p className="text-accent font-bold mb-6">{member.role}</p>
+                  
+                  {member.certifications.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-[#A8A093] mb-3 uppercase tracking-widest">Certifications</p>
+                      <ul className="space-y-2">
+                        {member.certifications.map((cert, idx) => (
+                          <li key={idx} className="text-[#D6D0C5] text-sm flex items-center font-medium">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent mr-3"></span>
+                            {cert}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Badges Reused */}
+      <div className="border-t border-[#38332C] bg-[#1A1815]">
+        <TrustBadges signals={siteConfig.trustSignals} />
+      </div>
+
+      {/* Testimonials Reused */}
+      <section className="py-24 bg-[#1A1815] text-[#F5F1EA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2 leading-loose pt-1">Testimonials</h2>
+            <h3 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-[#F5F1EA]">What Our Clients Say</h3>
+          </div>
+          
+          <ReviewSummary 
+            rating={siteConfig.googleRating || 5} 
+            count={siteConfig.googleReviewCount || 0} 
+            link={siteConfig.googleReviewLink} 
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+            {siteConfig.testimonials.slice(0, 3).map((testimonial, i) => (
+              <TiltCard key={i}>
+                <div className="bg-[#24211D] p-8 rounded-2xl border border-[#38332C] hover:border-accent/30 transition-colors h-full flex flex-col shadow-lg">
+                  <div className="flex items-center mb-4 space-x-1">
+                    {[...Array(testimonial.rating)].map((_, j) => (
+                      <Star key={j} className="w-5 h-5 text-accent fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-[#E6E1D8] italic mb-6 flex-grow text-lg leading-relaxed">"{testimonial.text}"</p>
+                  <div className="mt-auto">
+                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
+                    <p className="text-sm text-[#A8A093]">{testimonial.service} • {testimonial.date}</p>
+                  </div>
+                </div>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="py-24 bg-[#141210] border-t border-[#38332C]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-6">Ready to Experience the Difference?</h2>
+          <p className="text-xl text-[#A8A093] mb-10 leading-relaxed">
+            Join hundreds of satisfied customers in {siteConfig.city} and treat your vehicle to the best care possible.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <MagneticButton>
+              <Link href="/contact" className="px-8 py-4 rounded-full font-bold text-lg bg-accent text-[#1A1815] hover:brightness-110 transition-all block text-center shadow-xl">
+                Book Your Appointment
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="px-8 py-4 rounded-full font-bold text-lg border border-[#F5F1EA]/30 text-[#F5F1EA] hover:bg-white/10 transition-all block text-center">
+                Call {siteConfig.phone}
+              </a>
+            </MagneticButton>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/blog/[slug]/page.tsx
+================================================================================
+import { siteConfig } from "@/config/site.config";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+export function generateStaticParams() {
+  return siteConfig.blogPosts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = siteConfig.blogPosts.find((p) => p.slug === params.slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    <div className="pt-32 pb-24 bg-[#1A1815] text-[#F5F1EA]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link href="/blog" className="text-accent hover:text-[#F5F1EA] transition-colors mb-8 inline-block font-medium">&larr; Back to Blog</Link>
+        
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-6">{post.title}</h1>
+        <p className="text-[#A8A093] mb-8 text-sm">Published on {new Date(post.date).toLocaleDateString()}</p>
+        
+        {post.image && (
+          <div className="w-full h-64 md:h-96 rounded-2xl overflow-hidden mb-12 border border-[#38332C] shadow-2xl">
+            <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+        
+        <div className="text-[#E6E1D8] text-lg leading-relaxed space-y-6">
+          <p>{post.content}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/contact/page.tsx
+================================================================================
+import { siteConfig } from "@/config/site.config";
+import type { Metadata } from "next";
+import { MapPin, Phone, Mail, Clock, CheckCircle } from "lucide-react";
+import BookingForm from "@/components/contact/BookingForm";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: `Get in touch with ${siteConfig.businessName} to schedule your service.`,
+};
+
+export default function ContactPage() {
+  return (
+    <div className="pt-32 pb-0 bg-[#1A1815] text-[#F5F1EA]">
+      
+      {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-4">Contact Us</h1>
+        <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+          Ready to book your appointment? Fill out the form below or give us a call.
+        </p>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-[#24211D] rounded-3xl shadow-2xl overflow-hidden border border-[#38332C]">
+          
+          {/* Contact Info Column */}
+          <div className="p-10 lg:p-12 flex flex-col justify-between relative bg-[#1E1B17] border-b lg:border-b-0 lg:border-r border-[#38332C] text-[#F5F1EA]">
+            <div className="relative z-10">
+              <h2 className="text-3xl font-heading font-bold mb-8 text-[#F5F1EA]">Get In Touch</h2>
+              
+              <div className="space-y-8 mb-12">
+                <div className="flex items-start">
+                  <Phone className="w-6 h-6 mt-1 mr-4 text-accent shrink-0" />
+                  <div>
+                    <p className="font-semibold text-lg text-[#F5F1EA]">Phone</p>
+                    <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="hover:text-accent transition-colors text-[#A8A093]">{siteConfig.phone}</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Mail className="w-6 h-6 mt-1 mr-4 text-accent shrink-0" />
+                  <div>
+                    <p className="font-semibold text-lg text-[#F5F1EA]">Email</p>
+                    <a href={`mailto:${siteConfig.email}`} className="hover:text-accent transition-colors text-[#A8A093]">{siteConfig.email}</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <MapPin className="w-6 h-6 mt-1 mr-4 text-accent shrink-0" />
+                  <div>
+                    <p className="font-semibold text-lg text-[#F5F1EA]">Location</p>
+                    <p className="text-[#A8A093]">{siteConfig.address}<br/>{siteConfig.city}, {siteConfig.state} {siteConfig.zip}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Clock className="w-6 h-6 mt-1 mr-4 text-accent shrink-0" />
+                  <div>
+                    <p className="font-semibold text-lg text-[#F5F1EA]">Business Hours</p>
+                    <p className="text-[#A8A093]">{siteConfig.hoursOfOperation}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What Happens Next - Trust Block */}
+              <div className="pt-8 border-t border-[#38332C]">
+                <h3 className="text-xl font-bold font-heading mb-6 text-accent">What Happens Next?</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <p className="text-[#D6D0C5] text-sm">We'll review your request and call you within 24 hours.</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <p className="text-[#D6D0C5] text-sm">We'll provide a free, no-obligation customized estimate.</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <p className="text-[#D6D0C5] text-sm">Book your slot and bring your car in for transformation.</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Column */}
+          <div className="p-0 bg-[#24211D]">
+            <BookingForm />
+          </div>
+        </div>
+      </div>
+
+      {/* Map Embed Section */}
+      <section className="py-24 bg-[#141210] text-[#F5F1EA] border-y border-[#38332C]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-heading font-bold mb-4 text-[#F5F1EA]">Find Us</h2>
+            <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+              Conveniently located in the heart of {siteConfig.city}. Drop by during business hours!
+            </p>
+          </div>
+          <div className="w-full h-96 rounded-3xl overflow-hidden border border-[#38332C] shadow-2xl">
+            {/* Generic Map Embed based on Config City/State */}
+            <iframe 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              loading="lazy" 
+              allowFullScreen 
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(siteConfig.businessName + ', ' + siteConfig.city + ', ' + siteConfig.state)}`}
+              className="grayscale contrast-125 brightness-75 invert" // Invert map slightly to fit dark theme
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section specifically for Booking/Contact */}
+      <section className="py-24 bg-[#1A1815]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Before You Visit</h2>
+            <h3 className="text-4xl font-heading font-bold text-[#F5F1EA]">Booking FAQ</h3>
+          </div>
+          
+          <div className="space-y-6">
+            {[
+              { q: "Do you accept walk-ins?", a: "To guarantee the highest quality of service, we operate by appointment only. However, feel free to call ahead to see if we have any same-day cancellations." },
+              { q: "How far in advance should I book?", a: "We recommend booking at least 1-2 weeks in advance, especially during the spring and summer months when demand is highest." },
+              { q: "Do I need to leave my car all day?", a: "It depends on the package. Basic packages take a few hours, while advanced corrections and coatings require 24-48 hours. We will give you an exact timeframe when booking." },
+              { q: "Is there a waiting area?", a: "Yes! We have a comfortable, climate-controlled waiting area with complimentary Wi-Fi and refreshments for shorter services." }
+            ].map((faq, idx) => (
+              <div key={idx} className="bg-[#24211D] border border-[#38332C] rounded-2xl p-6 shadow-md">
+                <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-3">{faq.q}</h4>
+                <p className="text-[#E6E1D8] leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/globals.css
+================================================================================
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 245, 241, 234;
+  --background-start-rgb: 26, 24, 21;
+  --background-end-rgb: 26, 24, 21;
+  
+  /* Defaults matching Signature Process warm dark palette */
+  --primary-color: #1A1815;
+  --secondary-color: #A8A093;
+  --accent-color: #B8935F;
+  --neutral-base: #F5F1EA;
+  --surface-color: #24211D;
+  --surface-input: #2A2621;
+  --border-dark: #38332C;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #1A1815;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #1A1815;
+}
+::-webkit-scrollbar-thumb {
+  background: #38332C;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+
+================================================================================
+FILE: src/app/layout.tsx
+================================================================================
+import type { Metadata } from "next";
+import { Inter, Outfit, Playfair_Display, Roboto, Cinzel } from "next/font/google";
+import "./globals.css";
+import { siteConfig } from "@/config/site.config";
+import SmoothScroll from "@/components/layout/SmoothScroll";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import ScrollProgress from "@/components/animations/ScrollProgress";
+
+import NoiseOverlay from "@/components/ui/NoiseOverlay";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const roboto = Roboto({ weight: ["300", "400", "500", "700"], subsets: ["latin"], variable: "--font-roboto" });
+const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel" });
+
+const fontMap: Record<string, string> = {
+  "Inter": inter.variable,
+  "Outfit": outfit.variable,
+  "Playfair Display": playfair.variable,
+  "Roboto": roboto.variable,
+  "Cinzel": cinzel.variable,
+};
+
+export const metadata: Metadata = {
+  title: {
+    template: `%s | ${siteConfig.businessName}`,
+    default: `${siteConfig.businessName} | ${siteConfig.tagline}`,
+  },
+  description: siteConfig.tagline,
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        suppressHydrationWarning
+        className={`${fontMap[siteConfig.fonts?.body || "Inter"]} ${fontMap[siteConfig.fonts?.heading || "Outfit"]} font-sans antialiased text-base bg-primary selection:bg-accent selection:text-primary`}
+        style={{
+          "--primary-color": siteConfig.brandColors.primary || "#1A1815",
+          "--secondary-color": siteConfig.brandColors.secondary || "#A8A093",
+          "--accent-color": siteConfig.brandColors.accent || "#B8935F",
+          "--neutral-base": siteConfig.brandColors.neutralBase || "#F5F1EA",
+          "--surface-color": "#24211D",
+          "--surface-input": "#2A2621",
+          "--border-dark": "#38332C",
+          backgroundColor: siteConfig.brandColors.primary || "#1A1815",
+          color: siteConfig.brandColors.neutralBase || "#F5F1EA",
+        } as React.CSSProperties}
+      >
+        <NoiseOverlay />
+
+        <SmoothScroll>
+          <ScrollProgress />
+          <Navbar />
+          <main className="min-h-screen flex flex-col">{children}</main>
+          <Footer />
+        </SmoothScroll>
+      </body>
+    </html>
+  );
+}
+
+
+================================================================================
+FILE: src/app/not-found.tsx
+================================================================================
+import Link from "next/link";
+import { MoveRight } from "lucide-react";
+
+export default function NotFound() {
+  return (
+    <div className="min-h-[80vh] flex flex-col items-center justify-center text-center px-4 bg-[#1A1815] text-[#F5F1EA]">
+      <h1 className="text-9xl font-heading font-black text-accent/20 tracking-tighter mb-4">404</h1>
+      <h2 className="text-3xl font-heading font-bold text-[#F5F1EA] mb-6">Page Not Found</h2>
+      <p className="text-xl text-[#A8A093] max-w-md mx-auto mb-10 leading-relaxed">
+        It looks like you've drifted off the main road. The page you're looking for doesn't exist or has been moved.
+      </p>
+      <Link href="/" className="group flex items-center gap-2 px-8 py-4 bg-accent text-[#1A1815] rounded-full font-bold transition-all hover:brightness-110 shadow-xl">
+        Return Home
+        <MoveRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      </Link>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/page.tsx
+================================================================================
+import Hero from "@/components/sections/Hero";
+import { siteConfig } from "@/config/site.config";
+import Link from "next/link";
+import { ShieldCheck, Star, Award, CheckCircle } from "lucide-react";
+import AnimatedCounter from "@/components/animations/AnimatedCounter";
+import TiltCard from "@/components/animations/TiltCard";
+import MagneticButton from "@/components/animations/MagneticButton";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import ProcessTimeline from "@/components/sections/ProcessTimeline";
+import PricingTable from "@/components/sections/PricingTable";
+import TrustBadges from "@/components/sections/TrustBadges";
+import ReviewSummary from "@/components/sections/ReviewSummary";
+import FeaturedTransformationSection from "@/components/sections/FeaturedTransformationSection";
+
+export default function Home() {
+  return (
+    <>
+      <Hero />
+      
+      {/* Services Overview */}
+      <section className="py-24 bg-[#1A1815]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-4">Our Services</h2>
+            <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+              Professional, high-quality automotive care tailored to your vehicle's needs.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {siteConfig.services.map((service) => (
+              <TiltCard key={service.slug}>
+                <Link href={`/services/${service.slug}`} className="group block h-full">
+                  <div className="bg-[#24211D] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all h-full flex flex-col border border-[#38332C] hover:border-accent/40">
+                    <div className="relative h-64 overflow-hidden">
+                      <div className="absolute inset-0 bg-[#1A1815]" />
+                      <img 
+                        src={service.image} 
+                        alt={service.name} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute bottom-4 left-4">
+                        <span className="text-[#F5F1EA] font-bold px-3 py-1 rounded-full text-sm backdrop-blur-md bg-black/40 border border-white/10">
+                          {service.priceRange}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-8 flex flex-col flex-grow">
+                      <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-3">{service.name}</h3>
+                      <p className="text-[#A8A093] mb-6 flex-grow leading-relaxed">{service.shortDescription}</p>
+                      <span className="text-accent font-medium group-hover:text-[#F5F1EA] transition-colors inline-flex items-center">
+                        Learn More &rarr;
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <TrustBadges signals={siteConfig.trustSignals} />
+
+      {/* Before/After Showcase */}
+      <section className="py-24 bg-[#1A1815] border-b border-[#38332C] overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-4">See the Difference</h2>
+            <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+              Swipe the slider to see how our premium detailing transforms vehicles.
+            </p>
+          </div>
+          <div className="shadow-2xl rounded-2xl">
+            <BeforeAfterSlider 
+              beforeImage={siteConfig.galleryImages[0]?.beforeUrl || "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80"}
+              afterImage={siteConfig.galleryImages[0]?.afterUrl || "https://images.unsplash.com/photo-1600049449015-772c72b226e6?auto=format&fit=crop&q=80"}
+              beforeLabel="Before"
+              afterLabel="After"
+            />
+          </div>
+        </div>
+      </section>
+
+      <ProcessTimeline steps={siteConfig.processSteps || []} />
+
+      {/* Featured Transformation Case Study removed per user request */}
+
+      <PricingTable packages={siteConfig.pricingPackages || []} />
+
+      {/* Testimonials */}
+      <section className="py-24 bg-[#1A1815] text-[#F5F1EA] relative z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2 leading-loose pt-1">Testimonials</h2>
+            <h3 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-[#F5F1EA]">What Our Clients Say</h3>
+          </div>
+          
+          <ReviewSummary 
+            rating={siteConfig.googleRating || 5} 
+            count={siteConfig.googleReviewCount || 0} 
+            link={siteConfig.googleReviewLink} 
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            {siteConfig.testimonials.map((testimonial, i) => (
+              <TiltCard key={i}>
+                <div className="bg-[#24211D] p-8 rounded-2xl border border-[#38332C] hover:border-accent/30 transition-colors h-full flex flex-col shadow-lg">
+                  <div className="flex items-center mb-4 space-x-1">
+                    {[...Array(testimonial.rating)].map((_, j) => (
+                      <Star key={j} className="w-5 h-5 text-accent fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-[#E6E1D8] italic mb-6 leading-relaxed flex-grow">"{testimonial.text}"</p>
+                  <div className="mt-auto">
+                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
+                    <p className="text-sm text-[#A8A093]">{testimonial.service} • {new Date(testimonial.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 relative z-50 bg-[#141210] border-t border-[#38332C]">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-6">Ready to get started?</h2>
+          <p className="text-xl text-[#A8A093] mb-10">
+            Book your appointment today or give us a call for a free estimate.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <MagneticButton>
+              <Link href="/contact" className="px-8 py-4 bg-accent text-[#1A1815] rounded-full font-bold text-lg transition-all hover:brightness-110 shadow-xl w-full sm:w-auto block">
+                Get a Free Quote
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="px-8 py-4 border-2 border-[#F5F1EA]/30 text-[#F5F1EA] rounded-full font-bold text-lg hover:bg-white/10 transition-colors w-full sm:w-auto block">
+                Call {siteConfig.phone}
+              </a>
+            </MagneticButton>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+
+================================================================================
+FILE: src/app/services/[slug]/page.tsx
+================================================================================
+import { siteConfig } from "@/config/site.config";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { CheckCircle2, Phone, Star, ShieldCheck } from "lucide-react";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import ProcessTimeline from "@/components/sections/ProcessTimeline";
+import TiltCard from "@/components/animations/TiltCard";
+import MagneticButton from "@/components/animations/MagneticButton";
+import TrustBadges from "@/components/sections/TrustBadges";
+
+// Pre-render all service pages at build time
+export function generateStaticParams() {
+  return siteConfig.services.map((service) => ({
+    slug: service.slug,
+  }));
+}
+
+// Generate metadata based on the specific service
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const service = siteConfig.services.find((s) => s.slug === params.slug);
+  
+  if (!service) {
+    return { title: 'Service Not Found' };
+  }
+  
+  return {
+    title: service.name,
+    description: service.shortDescription,
+  };
+}
+
+export default function ServicePage({ params }: { params: { slug: string } }) {
+  const service = siteConfig.services.find((s) => s.slug === params.slug);
+  
+  if (!service) {
+    notFound();
+  }
+
+  // Find a specific testimonial for this service, or fallback to the first one if none explicitly match
+  const specificTestimonial = siteConfig.testimonials.find(t => t.service === service.name) || siteConfig.testimonials[0];
+
+  return (
+    <div className="bg-[#1A1815] text-[#F5F1EA]">
+      
+      {/* Service Hero */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-[#1A1815] text-[#F5F1EA]">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[#1A1815]/85 z-10"></div>
+          <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
+        </div>
+        
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <Link href="/services" className="text-[#A8A093] hover:text-[#F5F1EA] transition-colors mb-6 inline-block font-medium">&larr; Back to all services</Link>
+            <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 text-[#F5F1EA]">{service.name}</h1>
+            <p className="text-xl md:text-2xl text-[#E6E1D8] mb-8">{service.shortDescription}</p>
+            <div className="inline-block bg-black/50 backdrop-blur-md border border-white/15 rounded-full px-6 py-3 font-bold text-accent text-xl">
+              {service.priceRange}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content (Overview & Sidebar) */}
+      <section className="py-24 bg-[#1A1815]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+            
+            {/* Left Column: Details & Inclusions */}
+            <div className="lg:col-span-2">
+              <h2 className="text-3xl font-heading font-bold text-[#F5F1EA] mb-6">Service Overview</h2>
+              <div className="text-[#E6E1D8] text-lg leading-relaxed space-y-6 mb-16">
+                {service.longDescription.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
+                ))}
+              </div>
+
+              {/* What's Included */}
+              {service.serviceIncludes && service.serviceIncludes.length > 0 && (
+                <div className="bg-[#24211D] rounded-3xl p-8 md:p-10 mb-16 border border-[#38332C] shadow-xl text-[#F5F1EA]">
+                  <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-6">What's Included</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {service.serviceIncludes.map((item, idx) => (
+                      <div key={idx} className="flex items-start">
+                        <CheckCircle2 className="w-5 h-5 text-accent mr-3 shrink-0 mt-0.5" />
+                        <span className="text-[#E6E1D8]">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Sidebar CTA */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-28 bg-[#24211D] rounded-3xl p-8 border border-[#38332C] shadow-2xl">
+                <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-2">Book This Service</h3>
+                <p className="text-[#A8A093] mb-8">Secure your appointment today. No hidden fees, transparent pricing.</p>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start text-[#E6E1D8] font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-accent mr-3 shrink-0 mt-0.5" />
+                    {siteConfig.trustSignals.estimateBeforeWorkPolicy ? "Free estimate before work" : "Expert Technicians"}
+                  </li>
+                  <li className="flex items-start text-[#E6E1D8] font-medium">
+                    <ShieldCheck className="w-5 h-5 text-accent mr-3 shrink-0 mt-0.5" />
+                    {siteConfig.trustSignals.warrantyText}
+                  </li>
+                </ul>
+
+                <Link href="/contact" className="w-full block text-center bg-accent text-[#1A1815] font-bold py-4 rounded-full transition-transform hover:scale-[1.02] hover:brightness-110 shadow-xl mb-4">
+                  Request a Quote
+                </Link>
+                
+                <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="w-full flex items-center justify-center text-center bg-[#2A2621] border border-[#38332C] text-[#F5F1EA] font-bold py-4 rounded-full transition-colors hover:bg-[#332E27]">
+                  <Phone className="w-5 h-5 mr-2 text-accent" />
+                  Call Us Now
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Before & After Section */}
+      {service.beforeImage && service.afterImage && (
+        <section className="py-24 bg-[#1A1815] text-[#F5F1EA]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Real Results</h2>
+              <h3 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA]">Before & After</h3>
+            </div>
+            <div className="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-[#38332C]">
+              <BeforeAfterSlider 
+                beforeImage={service.beforeImage} 
+                afterImage={service.afterImage} 
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Process Steps for this specific service */}
+      {service.processSteps && service.processSteps.length > 0 && (
+        <ProcessTimeline steps={service.processSteps} />
+      )}
+
+      {/* Relevant Testimonial */}
+      {specificTestimonial && (
+        <section className="py-24 bg-[#1A1815] text-[#F5F1EA] border-t border-[#38332C]">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Client Experience</h2>
+              <h3 className="text-4xl font-heading font-bold text-[#F5F1EA]">What They Say About This Service</h3>
+            </div>
+            
+            <TiltCard>
+              <div className="bg-[#24211D] p-10 rounded-3xl border border-[#38332C] shadow-2xl text-center relative overflow-hidden">
+                {/* Decorative quote mark */}
+                <div className="absolute top-4 left-4 text-9xl text-white/5 font-serif leading-none select-none">"</div>
+                
+                <div className="flex justify-center mb-6 relative z-10">
+                  {[...Array(specificTestimonial.rating)].map((_, j) => (
+                    <Star key={j} className="w-6 h-6 text-accent fill-current mx-1" />
+                  ))}
+                </div>
+                <p className="text-xl md:text-2xl text-[#E6E1D8] font-medium italic mb-8 relative z-10 leading-relaxed">"{specificTestimonial.text}"</p>
+                <div className="relative z-10">
+                  <p className="font-bold text-lg text-[#F5F1EA] font-heading">{specificTestimonial.name}</p>
+                  <p className="text-sm text-[#A8A093] font-medium">{specificTestimonial.date}</p>
+                </div>
+              </div>
+            </TiltCard>
+          </div>
+        </section>
+      )}
+
+      {/* FAQs */}
+      {service.faqs && service.faqs.length > 0 && (
+        <section className="py-24 bg-[#1A1815]">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Have Questions?</h2>
+              <h3 className="text-4xl font-heading font-bold text-[#F5F1EA]">Service FAQ</h3>
+            </div>
+            
+            <div className="space-y-6">
+              {service.faqs.map((faq, index) => (
+                <div key={index} className="bg-[#24211D] rounded-2xl p-6 md:p-8 border border-[#38332C] shadow-md">
+                  <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-3 flex items-start">
+                    <span className="text-accent mr-3">Q:</span>
+                    {faq.question}
+                  </h4>
+                  <p className="text-[#E6E1D8] leading-relaxed flex items-start">
+                    <span className="text-secondary font-bold mr-3 opacity-0">A:</span>
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Trust Badges */}
+      <div className="border-t border-[#38332C] bg-[#1A1815]">
+        <TrustBadges signals={siteConfig.trustSignals} />
+      </div>
+
+      {/* Final Strong CTA */}
+      <section className="py-24 bg-[#141210] text-[#F5F1EA] border-t border-[#38332C]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-6">Ready to Transform Your Vehicle?</h2>
+          <p className="text-xl text-[#A8A093] mb-10 leading-relaxed">
+            Book your {service.name} appointment today and experience the {siteConfig.businessName} standard of perfection.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <MagneticButton>
+              <Link href="/contact" className="px-8 py-4 rounded-full font-bold text-lg bg-accent text-[#1A1815] hover:brightness-110 transition-all block text-center shadow-xl">
+                Book This Service
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="px-8 py-4 rounded-full font-bold text-lg border border-[#F5F1EA]/30 text-[#F5F1EA] hover:bg-white/10 transition-all block text-center">
+                Call {siteConfig.phone}
+              </a>
+            </MagneticButton>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/services/page.tsx
+================================================================================
+import { siteConfig } from "@/config/site.config";
+import type { Metadata } from "next";
+import Link from "next/link";
+import TiltCard from "@/components/animations/TiltCard";
+import MagneticButton from "@/components/animations/MagneticButton";
+import TrustBadges from "@/components/sections/TrustBadges";
+
+export const metadata: Metadata = {
+  title: "Our Services",
+  description: `Explore the premium automotive services offered by ${siteConfig.businessName}.`,
+};
+
+export default function ServicesPage() {
+  return (
+    <div className="pt-32 pb-0 bg-[#1A1815] text-[#F5F1EA]">
+      
+      {/* Header / Intro */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 text-center">
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA] mb-6">Our Services</h1>
+        <p className="text-xl text-[#A8A093] max-w-3xl mx-auto leading-relaxed">
+          At {siteConfig.businessName}, we believe every vehicle deserves meticulous attention to detail. We offer a comprehensive suite of premium services designed to restore, protect, and enhance your investment.
+        </p>
+      </div>
+
+      {/* Services Grid (Reused from Homepage) */}
+      <section className="pb-24 bg-[#1A1815]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {siteConfig.services.map((service) => (
+              <TiltCard key={service.slug}>
+                <Link href={`/services/${service.slug}`} className="group block h-full">
+                  <div className="bg-[#24211D] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all h-full flex flex-col border border-[#38332C] hover:border-accent/40">
+                    <div className="relative h-64 overflow-hidden">
+                      <div className="absolute inset-0 bg-[#1A1815]" />
+                      <img 
+                        src={service.image} 
+                        alt={service.name} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute bottom-4 left-4">
+                        <span className="text-[#F5F1EA] font-bold px-3 py-1 rounded-full text-sm backdrop-blur-md bg-black/40 border border-white/10">
+                          {service.priceRange}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-8 flex flex-col flex-grow">
+                      <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-3">{service.name}</h3>
+                      <p className="text-[#A8A093] mb-6 flex-grow leading-relaxed">{service.shortDescription}</p>
+                      <span className="text-accent font-medium group-hover:text-[#F5F1EA] transition-colors inline-flex items-center">
+                        Learn More &rarr;
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <div className="border-y border-[#38332C] bg-[#1A1815]">
+        <TrustBadges signals={siteConfig.trustSignals} />
+      </div>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-[#1A1815]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Common Questions</h2>
+            <h3 className="text-4xl font-heading font-bold text-[#F5F1EA]">Frequently Asked Questions</h3>
+          </div>
+          
+          <div className="space-y-6">
+            {[
+              { q: "How long does a typical service take?", a: "Service times vary by package. A standard interior detail takes 2-3 hours, while a full ceramic coating can take 1-2 days to allow for proper curing." },
+              { q: "Do I need to make an appointment?", a: "Yes, we operate by appointment only to ensure we can dedicate the proper amount of time and attention to every vehicle we service." },
+              { q: "Do you offer mobile services?", a: "Depending on the service requested and your location within our service area, we can arrange mobile detailing. Please contact us for details." },
+              { q: "What kind of products do you use?", a: "We exclusively use premium, professional-grade products that are safe for your vehicle's specific materials and finishes." }
+            ].map((faq, idx) => (
+              <div key={idx} className="bg-[#24211D] border border-[#38332C] rounded-2xl p-6 shadow-md">
+                <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-3">{faq.q}</h4>
+                <p className="text-[#E6E1D8] leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="py-24 bg-[#141210] text-[#F5F1EA] border-t border-[#38332C]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">Not sure which service is right for you?</h2>
+          <p className="text-xl mb-10 text-[#A8A093]">
+            Contact our team for a personalized consultation and free estimate.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <MagneticButton>
+              <Link href="/contact" className="px-8 py-4 rounded-full font-bold text-lg bg-accent text-[#1A1815] hover:brightness-110 transition-all block text-center shadow-xl">
+                Get a Free Quote
+              </Link>
+            </MagneticButton>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/app/template.tsx
+================================================================================
+"use client";
+
+import { motion } from "framer-motion";
+import { getFramerMotionTransition } from "@/utils/motion";
+
+export default function Template({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={getFramerMotionTransition(0.4)}
+      className="flex-grow flex flex-col"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/3d/CarHero.tsx
+================================================================================
+// Deprecated: 3D CarHero has been replaced by the full-bleed video background Hero in @/components/sections/Hero.
+export { default } from "@/components/sections/Hero";
+
+
+================================================================================
+FILE: src/components/3d/Scene.tsx
+================================================================================
+// Deprecated: 3D car hero scene has been completely removed in favor of the full-bleed video background hero.
+export default function Scene() {
+  return null;
+}
+
+
+================================================================================
+FILE: src/components/animations/AnimatedCounter.tsx
+================================================================================
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useInView, useSpring } from "framer-motion";
+
+interface AnimatedCounterProps {
+  value: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+}
+
+export default function AnimatedCounter({ 
+  value, 
+  suffix = "", 
+  prefix = "",
+  duration = 2000 
+}: AnimatedCounterProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [displayValue, setDisplayValue] = useState(0);
+
+  const spring = useSpring(0, {
+    bounce: 0,
+    duration: duration,
+  });
+
+  useEffect(() => {
+    if (isInView) {
+      spring.set(value);
+    }
+  }, [isInView, spring, value]);
+
+  useEffect(() => {
+    const unsubscribe = spring.on("change", (latest) => {
+      setDisplayValue(Math.floor(latest));
+    });
+    return () => unsubscribe();
+  }, [spring]);
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {prefix}{displayValue}{suffix}
+    </span>
+  );
+}
+
+
+================================================================================
+FILE: src/components/animations/MagneticButton.tsx
+================================================================================
+"use client";
+
+import { useRef, useState } from "react";
+import { motion, useSpring } from "framer-motion";
+
+interface MagneticButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  strength?: number;
+}
+
+export default function MagneticButton({ 
+  children, 
+  className = "",
+  strength = 15 // px max distance
+}: MagneticButtonProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  const xSpring = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 });
+  const ySpring = useSpring(0, { stiffness: 150, damping: 15, mass: 0.1 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
+    const middleX = clientX - (left + width / 2);
+    const middleY = clientY - (top + height / 2);
+
+    xSpring.set(middleX * 0.3);
+    ySpring.set(middleY * 0.3);
+  };
+
+  const handleMouseLeave = () => {
+    xSpring.set(0);
+    ySpring.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: xSpring, y: ySpring }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      className={`inline-block ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/animations/MiniCar.tsx
+================================================================================
+"use client";
+
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useVelocity, useSpring, useTransform, useAnimationFrame } from "framer-motion";
+import { getFramerMotionTransition } from "@/utils/motion";
+
+export default function MiniCar() {
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, {
+    damping: 50,
+    stiffness: 400
+  });
+
+  const [rotation, setRotation] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Pause animation when tab is inactive
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(document.visibilityState === "visible");
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  useAnimationFrame((t, delta) => {
+    if (!isVisible) return;
+    
+    // Base rotation speed + scroll-based speed
+    const baseSpeed = 0.5;
+    const velocityFactor = smoothVelocity.get() * 0.05; // Adjust multiplier as needed
+    
+    // Keep it rotating smoothly
+    let moveBy = (baseSpeed + Math.abs(velocityFactor)) * (delta / 16);
+    
+    // Reverse direction based on scroll direction if desired, 
+    // but a constant forward direction + speedup is usually better for a wheel
+    if (velocityFactor < 0) {
+      moveBy = moveBy * -1;
+    }
+    
+    setRotation(prev => (prev + moveBy) % 360);
+  });
+
+  return (
+    <motion.div
+      className="fixed bottom-6 right-6 z-40 hidden md:flex items-center justify-center w-16 h-16 pointer-events-none mix-blend-difference"
+      style={{ rotate: rotation }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={getFramerMotionTransition(1, 0.5)}
+    >
+      {/* Sleek Minimalist Wheel / Rim SVG */}
+      <svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="white" strokeWidth="2" strokeDasharray="4 4" opacity="0.5" />
+        <circle cx="50" cy="50" r="38" stroke="white" strokeWidth="4" />
+        <circle cx="50" cy="50" r="12" stroke="white" strokeWidth="2" />
+        <path d="M50 12L50 38M50 62L50 88M12 50L38 50M62 50L88 50" stroke="white" strokeWidth="3" />
+        <path d="M23 23L41 41M59 59L77 77M77 23L59 41M41 59L23 77" stroke="white" strokeWidth="2" opacity="0.7" />
+      </svg>
+    </motion.div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/animations/ScrollProgress.tsx
+================================================================================
+"use client";
+
+import { motion, useScroll, useSpring } from "framer-motion";
+
+export default function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-1 z-50 origin-left"
+      style={{ 
+        scaleX,
+        backgroundColor: "var(--accent-color, #eab308)" 
+      }}
+    />
+  );
+}
+
+
+================================================================================
+FILE: src/components/animations/TiltCard.tsx
+================================================================================
+"use client";
+
+import { useRef, useState } from "react";
+import { motion, useSpring } from "framer-motion";
+
+interface TiltCardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export default function TiltCard({ children, className = "" }: TiltCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Use springs for smooth snap and follow
+  const xSpring = useSpring(0, { stiffness: 300, damping: 40 });
+  const ySpring = useSpring(0, { stiffness: 300, damping: 40 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    
+    // Only apply on desktop devices (non-touch)
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const rect = ref.current.getBoundingClientRect();
+    
+    const width = rect.width;
+    const height = rect.height;
+    
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    
+    // Max tilt angles
+    xSpring.set(xPct * 15); // max 15deg
+    ySpring.set(yPct * -15);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    xSpring.set(0);
+    ySpring.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateY: xSpring,
+        rotateX: ySpring,
+        transformStyle: "preserve-3d",
+      }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      className={`relative h-full ${className}`}
+    >
+      <div 
+        style={{ transform: "translateZ(30px)", height: "100%" }}
+        className="w-full h-full"
+      >
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/contact/BookingForm.tsx
+================================================================================
+"use client";
+
+import { useState } from "react";
+import MagneticButton from "../animations/MagneticButton";
+import { Calendar, Clock, Car, User, Mail, Phone, MessageSquare } from "lucide-react";
+
+export default function BookingForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }, 1500);
+  };
+
+  if (submitted) {
+    return (
+      <div className="bg-[#24211D] p-12 rounded-3xl shadow-2xl border border-accent/40 text-center">
+        <div className="w-20 h-20 bg-accent/20 text-accent rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+        </div>
+        <h3 className="text-3xl font-heading font-bold text-[#F5F1EA] mb-4">Request Received</h3>
+        <p className="text-[#A8A093] mb-8">We'll review your preferred time and contact you shortly to confirm your appointment.</p>
+        <button onClick={() => setSubmitted(false)} className="text-accent font-bold underline hover:brightness-110">Book another vehicle</button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-[#24211D] p-8 md:p-12 rounded-3xl shadow-2xl border border-[#38332C]">
+      <div className="mb-8 border-b border-[#38332C] pb-8">
+        <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-6 flex items-center gap-3">
+          <Calendar className="w-6 h-6 text-accent" />
+          Preferred Schedule
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Date</label>
+            <div className="relative">
+              <input 
+                type="date" 
+                required
+                className="w-full px-4 py-3.5 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA]"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Time</label>
+            <div className="relative">
+              <input 
+                type="time" 
+                required
+                className="w-full px-4 py-3.5 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-8 border-b border-[#38332C] pb-8">
+        <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-6 flex items-center gap-3">
+          <Car className="w-6 h-6 text-accent" />
+          Vehicle Details
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Make / Model / Year</label>
+            <input 
+              type="text" 
+              placeholder="e.g. 2022 Porsche 911"
+              required
+              className="w-full px-4 py-3.5 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA] placeholder-[#8E867A]"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Service Type</label>
+            <select 
+              required
+              className="w-full px-4 py-3.5 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA]"
+            >
+              <option value="" className="bg-[#24211D] text-[#8E867A]">Select a service...</option>
+              <option value="basic" className="bg-[#24211D] text-[#F5F1EA]">Basic Detail</option>
+              <option value="premium" className="bg-[#24211D] text-[#F5F1EA]">Premium Detail</option>
+              <option value="ultimate" className="bg-[#24211D] text-[#F5F1EA]">Ultimate Detail / Ceramic</option>
+              <option value="other" className="bg-[#24211D] text-[#F5F1EA]">Not Sure / Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-6 flex items-center gap-3">
+          <User className="w-6 h-6 text-accent" />
+          Contact Info
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Full Name</label>
+            <div className="relative">
+              <input type="text" required className="w-full px-4 py-3.5 pl-11 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA] placeholder-[#8E867A]" placeholder="John Doe" />
+              <User className="w-5 h-5 text-accent absolute left-4 top-4" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Phone Number</label>
+            <div className="relative">
+              <input type="tel" required className="w-full px-4 py-3.5 pl-11 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA] placeholder-[#8E867A]" placeholder="(555) 000-0000" />
+              <Phone className="w-5 h-5 text-accent absolute left-4 top-4" />
+            </div>
+          </div>
+        </div>
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Email Address</label>
+          <div className="relative">
+            <input type="email" required className="w-full px-4 py-3.5 pl-11 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA] placeholder-[#8E867A]" placeholder="john@example.com" />
+            <Mail className="w-5 h-5 text-accent absolute left-4 top-4" />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-[#D6D0C5] mb-2">Additional Notes (Optional)</label>
+          <div className="relative">
+            <textarea rows={3} className="w-full px-4 py-3.5 pl-11 bg-[#2A2621] border border-[#4A4237] rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all text-[#F5F1EA] placeholder-[#8E867A] resize-none" placeholder="Any specific areas of concern or questions..."></textarea>
+            <MessageSquare className="w-5 h-5 text-accent absolute left-4 top-4" />
+          </div>
+        </div>
+      </div>
+
+      <MagneticButton className="w-full">
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          className="w-full bg-accent text-[#1A1815] py-5 rounded-2xl font-bold text-lg hover:brightness-110 transition-all disabled:opacity-70 flex justify-center items-center shadow-xl cursor-pointer"
+        >
+          {isSubmitting ? (
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#1A1815]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          ) : "Request Appointment"}
+        </button>
+      </MagneticButton>
+    </form>
+  );
+}
+
+
+================================================================================
+FILE: src/components/contact/ContactForm.tsx
+================================================================================
+"use client";
+
+import { useState } from "react";
+import { siteConfig } from "@/config/site.config";
+
+export default function ContactForm() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div className="bg-[#24211D] border border-accent/40 text-[#F5F1EA] rounded-2xl p-8 text-center shadow-xl">
+        <h3 className="text-2xl font-bold mb-2 text-[#F5F1EA]">Quote Request Sent!</h3>
+        <p className="text-[#A8A093]">Thank you for reaching out. We will get back to you shortly.</p>
+        <button
+          onClick={() => setSubmitted(false)}
+          className="mt-6 text-sm text-accent underline font-medium hover:brightness-110"
+        >
+          Send another request
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-[#D6D0C5] mb-1.5">
+            Full Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            required
+            className="w-full bg-[#2A2621] border border-[#4A4237] rounded-xl px-4 py-3.5 text-[#F5F1EA] placeholder-[#8E867A] focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all shadow-inner"
+            placeholder="John Doe"
+          />
+        </div>
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-[#D6D0C5] mb-1.5">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            required
+            className="w-full bg-[#2A2621] border border-[#4A4237] rounded-xl px-4 py-3.5 text-[#F5F1EA] placeholder-[#8E867A] focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all shadow-inner"
+            placeholder="(555) 000-0000"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="service" className="block text-sm font-semibold text-[#D6D0C5] mb-1.5">
+          Service Needed
+        </label>
+        <select
+          id="service"
+          required
+          className="w-full bg-[#2A2621] border border-[#4A4237] rounded-xl px-4 py-3.5 text-[#F5F1EA] focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all shadow-inner"
+        >
+          <option value="" className="bg-[#24211D] text-[#8E867A]">Select a service...</option>
+          {siteConfig.services.map((s) => (
+            <option key={s.slug} value={s.slug} className="bg-[#24211D] text-[#F5F1EA]">
+              {s.name}
+            </option>
+          ))}
+          <option value="other" className="bg-[#24211D] text-[#F5F1EA]">Other / Not Sure</option>
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="vehicle" className="block text-sm font-semibold text-[#D6D0C5] mb-1.5">
+          Vehicle Make & Model
+        </label>
+        <input
+          type="text"
+          id="vehicle"
+          className="w-full bg-[#2A2621] border border-[#4A4237] rounded-xl px-4 py-3.5 text-[#F5F1EA] placeholder-[#8E867A] focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all shadow-inner"
+          placeholder="e.g. 2020 Ford F-150"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="message" className="block text-sm font-semibold text-[#D6D0C5] mb-1.5">
+          Additional Details
+        </label>
+        <textarea
+          id="message"
+          rows={4}
+          className="w-full bg-[#2A2621] border border-[#4A4237] rounded-xl px-4 py-3.5 text-[#F5F1EA] placeholder-[#8E867A] focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition-all shadow-inner resize-none"
+          placeholder="How can we help you?"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-accent text-[#1A1815] font-bold py-4 rounded-xl transition-all hover:brightness-110 active:scale-[0.98] shadow-xl cursor-pointer text-lg"
+      >
+        Send Request
+      </button>
+    </form>
+  );
+}
+
+
+================================================================================
+FILE: src/components/layout/Footer.tsx
+================================================================================
+import Link from "next/link";
+import { siteConfig } from "@/config/site.config";
+import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, Clock } from "lucide-react";
+
+export default function Footer() {
+  return (
+    <footer className="bg-[#141210] text-[#D6D0C5] py-14 lg:py-18 mt-auto border-t border-[#38332C]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          
+          {/* Brand Info */}
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-4">{siteConfig.businessName}</h2>
+            <p className="text-sm text-[#A8A093] mb-6 max-w-sm leading-relaxed">{siteConfig.tagline}</p>
+            <div className="flex space-x-4">
+              {siteConfig.socialLinks.facebook && (
+                <a href={siteConfig.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-[#A8A093] hover:text-accent transition-colors">
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {siteConfig.socialLinks.instagram && (
+                <a href={siteConfig.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-[#A8A093] hover:text-accent transition-colors">
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {siteConfig.socialLinks.twitter && (
+                <a href={siteConfig.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-[#A8A093] hover:text-accent transition-colors">
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-heading font-semibold text-[#F5F1EA] mb-4">Our Services</h3>
+            <ul className="space-y-3 text-sm">
+              {siteConfig.services.map((service) => (
+                <li key={service.slug}>
+                  <Link href={`/services/${service.slug}`} className="text-[#A8A093] hover:text-accent transition-colors">
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info (NAP) */}
+          <div>
+            <h3 className="text-lg font-heading font-semibold text-[#F5F1EA] mb-4">Contact Us</h3>
+            <ul className="space-y-4 text-sm">
+              <li className="flex items-start">
+                <MapPin className="w-5 h-5 mr-3 mt-0.5 text-accent flex-shrink-0" />
+                <span className="text-[#A8A093]">
+                  {siteConfig.address}<br />
+                  {siteConfig.city}, {siteConfig.state} {siteConfig.zip}
+                </span>
+              </li>
+              <li className="flex items-center">
+                <Phone className="w-5 h-5 mr-3 text-accent flex-shrink-0" />
+                <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="text-[#A8A093] hover:text-accent transition-colors">{siteConfig.phone}</a>
+              </li>
+              <li className="flex items-center">
+                <Mail className="w-5 h-5 mr-3 text-accent flex-shrink-0" />
+                <a href={`mailto:${siteConfig.email}`} className="text-[#A8A093] hover:text-accent transition-colors">{siteConfig.email}</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Hours & Area */}
+          <div>
+            <h3 className="text-lg font-heading font-semibold text-[#F5F1EA] mb-4">Hours & Service Area</h3>
+            <div className="flex items-start mb-4 text-sm">
+              <Clock className="w-5 h-5 mr-3 mt-0.5 text-accent flex-shrink-0" />
+              <span className="text-[#A8A093]">{siteConfig.hoursOfOperation}</span>
+            </div>
+            <div className="text-sm">
+              <p className="font-semibold text-[#F5F1EA] mb-2">Serving:</p>
+              <p className="text-[#A8A093]">{siteConfig.serviceArea.join(", ")}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="border-t border-[#38332C] mt-12 pt-8 text-sm text-center flex flex-col md:flex-row justify-between items-center text-[#8E867A]">
+          <p>&copy; {new Date().getFullYear()} {siteConfig.businessName}. All rights reserved.</p>
+          <p className="mt-4 md:mt-0">Premium Auto Detailing Experience</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
+================================================================================
+FILE: src/components/layout/Navbar.tsx
+================================================================================
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X, Phone } from "lucide-react";
+import { siteConfig } from "@/config/site.config";
+
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="fixed w-full z-50 top-0 transition-all duration-300 bg-[#1A1815]/95 backdrop-blur-md border-b border-[#38332C]/60 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-20 items-center">
+          
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="font-heading font-bold text-2xl text-[#F5F1EA]">
+              {siteConfig.businessName}
+            </Link>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">Home</Link>
+            <div className="group relative">
+              <Link href="/services" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium cursor-pointer active:scale-[0.98] inline-block py-2">Services</Link>
+              <div className="absolute top-full left-0 hidden group-hover:block w-56 bg-[#24211D] border border-[#38332C] shadow-2xl py-2 rounded-xl">
+                {siteConfig.services.map((service) => (
+                  <Link key={service.slug} href={`/services/${service.slug}`} className="block px-4 py-2.5 text-sm text-[#D6D0C5] hover:bg-[#2E2A24] hover:text-accent transition-colors">
+                    {service.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <Link href="/about" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">About</Link>
+            <Link href="/contact" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">Contact</Link>
+          </div>
+
+          {/* CTA & Phone */}
+          <div className="hidden md:flex items-center space-x-5">
+            <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="flex items-center text-[#D6D0C5] font-bold hover:text-accent transition-colors duration-medium ease-premium active:scale-[0.98]">
+              <Phone className="w-5 h-5 mr-2 text-accent" />
+              {siteConfig.phone}
+            </a>
+            <Link href="/contact" className="px-6 py-2.5 rounded-full text-[#1A1815] font-bold transition-all duration-medium ease-premium hover:scale-105 active:scale-[0.98] bg-accent hover:brightness-110 shadow-md">
+              Get a Quote
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-[#D6D0C5] hover:text-accent focus:outline-none"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-[#1A1815] border-t border-[#38332C] absolute w-full shadow-2xl">
+          <div className="px-4 pt-3 pb-6 space-y-2">
+            <Link href="/" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">Home</Link>
+            <Link href="/services" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">Services Overview</Link>
+            {siteConfig.services.map((service) => (
+              <Link key={service.slug} href={`/services/${service.slug}`} onClick={() => setIsOpen(false)} className="block pl-6 pr-3 py-1.5 text-sm font-medium text-[#A8A093] hover:text-accent transition-colors rounded-md">
+                - {service.name}
+              </Link>
+            ))}
+            <Link href="/about" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">About</Link>
+            <Link href="/contact" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">Contact</Link>
+            
+            <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="block px-4 py-3.5 text-center text-[#1A1815] font-bold rounded-xl mt-4 transition-transform active:scale-[0.98] bg-accent shadow-md">
+              Call {siteConfig.phone}
+            </a>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+
+================================================================================
+FILE: src/components/layout/SmoothScroll.tsx
+================================================================================
+"use client";
+
+import { useEffect } from "react";
+import Lenis from "lenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function SmoothScroll({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    // Disable the browser's built-in scroll restoration so it doesn't
+    // remember the previous scroll position on refresh.
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Force the page to the very top before Lenis takes over
+    window.scrollTo(0, 0);
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const ticker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(ticker);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(ticker);
+      lenis.destroy();
+    };
+  }, []);
+
+  return <>{children}</>;
+}
+
+
+================================================================================
+FILE: src/components/sections/FeaturedTransformationSection.tsx
+================================================================================
+"use client";
+
+import Link from "next/link";
+import { Quote } from "lucide-react";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import { FeaturedTransformation } from "@/config/types";
+
+interface FeaturedTransformationSectionProps {
+  data: FeaturedTransformation;
+}
+
+export default function FeaturedTransformationSection({ data }: FeaturedTransformationSectionProps) {
+  return (
+    <section className="py-24 bg-primary overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Label */}
+        <div className="text-center mb-16">
+          <p className="text-sm font-bold tracking-widest text-accent uppercase mb-3">Featured Case Study</p>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-base leading-tight">{data.title}</h2>
+          <p className="mt-4 text-secondary font-medium">{data.vehicleDescription}</p>
+        </div>
+
+        {/* Main Two-Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+
+          {/* Left: Large Before/After Slider (3/5 width on desktop) */}
+          <div className="lg:col-span-3">
+            <div className="rounded-3xl overflow-hidden shadow-2xl border border-secondary/20">
+              <BeforeAfterSlider
+                beforeImage={data.beforeImage}
+                afterImage={data.afterImage}
+                beforeLabel="Before"
+                afterLabel="After"
+              />
+            </div>
+          </div>
+
+          {/* Right: Story + Meta (2/5 width on desktop) */}
+          <div className="lg:col-span-2 flex flex-col justify-center">
+            
+            {/* Story Narrative */}
+            <p className="text-base/80 text-[#F5F1EA]/80 leading-relaxed text-lg mb-8">
+              {data.story}
+            </p>
+
+            {/* Services Used Pills */}
+            <div className="mb-8">
+              <p className="text-xs font-bold tracking-widest text-secondary uppercase mb-3">Services Performed</p>
+              <div className="flex flex-wrap gap-2">
+                {data.servicesUsed.map((service) => (
+                  <Link
+                    key={service.slug}
+                    href={`/services/${service.slug}`}
+                    className="px-4 py-1.5 rounded-full text-sm font-semibold border border-accent/40 text-accent hover:bg-accent hover:text-primary transition-all duration-200"
+                  >
+                    {service.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Inline Testimonial Quote (if present) */}
+            {data.testimonialQuote && (
+              <div className="border-l-2 border-accent pl-6 py-2">
+                <Quote className="w-5 h-5 text-accent mb-3 opacity-70" />
+                <p className="text-[#F5F1EA]/70 italic leading-relaxed mb-3">
+                  "{data.testimonialQuote}"
+                </p>
+                {data.testimonialAuthor && (
+                  <p className="text-sm font-bold text-secondary tracking-wide">— {data.testimonialAuthor}</p>
+                )}
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+================================================================================
+FILE: src/components/sections/Hero.tsx
+================================================================================
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { siteConfig } from "@/config/site.config";
+import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import MagneticButton from "@/components/animations/MagneticButton";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const textWrapperRef = useRef<HTMLDivElement>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReducedMotion(prefersReducedMotion);
+
+    const videoEl = videoRef.current;
+    if (prefersReducedMotion && videoEl) {
+      videoEl.pause();
+    } else if (videoEl) {
+      // Ensure autoplay starts cleanly without uncaught promise exceptions
+      videoEl.play().catch(() => {
+        // Autoplay may be deferred or blocked by browser power-saver mode; poster image handles this gracefully
+      });
+    }
+
+    if (!containerRef.current || !textWrapperRef.current) return;
+
+    if (prefersReducedMotion) {
+      gsap.set(textWrapperRef.current, { opacity: 1, y: 0 });
+      return;
+    }
+
+    // 1. Immediate entrance animation on mount (visible on page load, no scroll trigger needed)
+    const entranceTl = gsap.fromTo(
+      textWrapperRef.current,
+      { opacity: 0, y: 24, scale: 0.98 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out", delay: 0.1 }
+    );
+
+    // 2. Simple, clean scroll behavior: text fades up/out as user scrolls past hero
+    const scrollTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.5,
+      },
+    });
+
+    // Text fades out smoothly
+    scrollTl.to(
+      textWrapperRef.current,
+      {
+        opacity: 0,
+        y: -45,
+        ease: "none",
+      },
+      0
+    );
+
+    // Subtle video parallax drift (moves slightly slower than scroll)
+    if (videoEl) {
+      scrollTl.to(
+        videoEl,
+        {
+          y: "14%",
+          ease: "none",
+        },
+        0
+      );
+    }
+
+    return () => {
+      entranceTl.kill();
+      scrollTl.kill();
+    };
+  }, []);
+
+  const videoSource = siteConfig.heroVideoUrl || "/videos/hero.mp4";
+  const posterSource = siteConfig.heroImage || "/images/hero-mercedes.png";
+  const serviceCity = siteConfig.serviceArea?.[0] || "Los Angeles";
+
+  return (
+    <section
+      ref={containerRef}
+      id="hero-section"
+      className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center"
+    >
+      {/* Background Media Container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        {/* Static poster fallback image shown under video / if video is loading or paused */}
+        <img
+          src={posterSource}
+          alt={siteConfig.heroImageAlt || siteConfig.businessName}
+          className="absolute inset-0 w-full h-full object-cover scale-105"
+          loading="eager"
+        />
+
+        {/* Full-bleed video background */}
+        {!reducedMotion && (
+          <video
+            ref={videoRef}
+            src={videoSource}
+            poster={posterSource}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none"
+          />
+        )}
+
+        {/* Dark gradient overlay for maximum text legibility & contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/35 z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />
+      </div>
+
+      {/* Hero Content Overlay — centered, legible, visible immediately on load */}
+      <div className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center pt-16 sm:pt-20">
+        <div
+          ref={textWrapperRef}
+          className="flex flex-col items-center will-change-transform"
+        >
+          {/* Business Badge */}
+          <span
+            style={{ backgroundColor: "var(--primary-color)" }}
+            className="text-white px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase mb-6 shadow-xl border border-white/15 backdrop-blur-md inline-block"
+          >
+            {siteConfig.businessName}
+          </span>
+
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tight mb-6 leading-[1.1] max-w-4xl text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+            {siteConfig.tagline}
+          </h1>
+
+          {/* Subtext */}
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)] font-normal">
+            Serving {serviceCity} and surrounding areas.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center">
+            <MagneticButton>
+              <Link
+                href="/contact"
+                className="px-8 py-4 rounded-full font-bold text-base sm:text-lg text-center transition-all duration-medium ease-premium active:scale-[0.98] shadow-2xl block w-full sm:w-auto text-white border border-white/20 hover:brightness-110"
+                style={{ backgroundColor: "var(--primary-color)" }}
+              >
+                Book Appointment
+              </Link>
+            </MagneticButton>
+
+            <MagneticButton>
+              <a
+                href={`tel:${siteConfig.phone.replace(/[^0-9]/g, "")}`}
+                className="px-8 py-4 rounded-full font-bold text-base sm:text-lg text-center bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-white border border-white/25 shadow-xl block w-full sm:w-auto active:scale-[0.98]"
+              >
+                Call {siteConfig.phone}
+              </a>
+            </MagneticButton>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+================================================================================
+FILE: src/components/sections/Marquee.tsx
+================================================================================
+export default function Marquee({ items }: { items: { name: string; logo: string }[] }) {
+  if (!items || items.length === 0) return null;
+
+  // Duplicate items to ensure smooth infinite scrolling
+  const scrollItems = [...items, ...items, ...items, ...items];
+
+  return (
+    <div className="w-full bg-[#1A1815] py-12 border-y border-[#38332C] overflow-hidden relative flex items-center">
+      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#1A1815] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#1A1815] to-transparent z-10 pointer-events-none" />
+      
+      <div className="flex animate-marquee hover:animation-paused">
+        {scrollItems.map((item, i) => (
+          <div key={i} className="flex-shrink-0 flex items-center justify-center px-12 md:px-24 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0">
+            {/* If it's just a placeholder icon path, render img */}
+            <img src={item.logo} alt={item.name} className="h-10 md:h-12 w-auto object-contain" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/sections/PricingTable.tsx
+================================================================================
+"use client";
+
+import { Check } from "lucide-react";
+import MagneticButton from "../animations/MagneticButton";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface PricingPackage {
+  name: string;
+  price: string;
+  isPopular?: boolean;
+  features: string[];
+}
+
+export default function PricingTable({ packages }: { packages: PricingPackage[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    // Select all pricing cards inside the container
+    const cards = containerRef.current.querySelectorAll('.pricing-card');
+    
+    // Animate cards popping up
+    gsap.fromTo(
+      cards,
+      { y: 100, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, [packages]);
+
+  if (!packages || packages.length === 0) return null;
+
+  return (
+    <section ref={containerRef} className="py-24 bg-[#1A1815] border-b border-[#38332C] relative z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">Transparent Pricing</h2>
+          <h3 className="text-4xl md:text-5xl font-heading font-bold text-[#F5F1EA]">Premium Packages</h3>
+          <p className="mt-4 text-xl text-[#A8A093] max-w-2xl mx-auto">
+            Choose the level of perfection your vehicle deserves. No hidden fees.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
+          {packages.map((pkg, idx) => {
+            const isPopular = pkg.isPopular;
+            return (
+              <div 
+                key={idx} 
+                className={`pricing-card relative flex flex-col p-8 rounded-3xl bg-[#24211D] ${
+                  isPopular 
+                    ? "border-2 border-accent shadow-2xl md:-translate-y-4" 
+                    : "border border-[#38332C] shadow-lg mt-0 md:mt-4"
+                } transition-all duration-300 hover:shadow-2xl`}
+              >
+                {isPopular && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent text-[#1A1815] text-xs font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg z-10">
+                    Most Popular
+                  </div>
+                )}
+                
+                <h4 className="text-2xl font-bold font-heading text-[#F5F1EA] mb-2">{pkg.name}</h4>
+                <div className="flex items-baseline gap-2 mb-6 border-b border-[#38332C] pb-6">
+                  <span className="text-4xl font-bold text-[#F5F1EA]">{pkg.price}</span>
+                  <span className="text-[#A8A093] font-medium tracking-wide text-sm">/ starting at</span>
+                </div>
+                
+                <ul className="flex-grow space-y-4 mb-8">
+                  {pkg.features.map((feature, fIdx) => (
+                    <li key={fIdx} className="flex items-start gap-3 text-[#D6D0C5]">
+                      <Check className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <MagneticButton className="w-full">
+                  <a href="/contact" className={`block w-full text-center py-4 rounded-full font-bold transition-all ${
+                    isPopular 
+                      ? "bg-accent text-[#1A1815] hover:brightness-110 shadow-lg" 
+                      : "border border-[#F5F1EA]/25 text-[#F5F1EA] hover:bg-[#F5F1EA]/10"
+                  }`}>
+                    Book Now
+                  </a>
+                </MagneticButton>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+================================================================================
+FILE: src/components/sections/ProcessTimeline.tsx
+================================================================================
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ClipboardList, Droplets, Sparkles, Shield, CheckCircle, type LucideIcon } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const iconMap: Record<string, LucideIcon> = {
+  ClipboardList,
+  Droplets,
+  Sparkles,
+  Shield,
+  CheckCircle,
+};
+
+interface ProcessStep {
+  step: string;
+  title: string;
+  description: string;
+  icon: string;
+  videoUrl?: string;
+  posterUrl?: string;
+}
+
+export default function ProcessTimeline({ steps }: { steps: ProcessStep[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (!isDesktop) return;
+    if (!containerRef.current || !scrollWrapperRef.current) return;
+
+    const container = containerRef.current;
+    const scrollWrapper = scrollWrapperRef.current;
+
+    // Horizontal translation distance = how far to slide the track
+    const getScrollDist = () => {
+      const vw = window.innerWidth;
+      const cardW = vw * 0.35;
+      const gap = 32; // gap-8 = 2rem = 32px
+      const leftPad = vw * 0.10;
+      const n = steps.length;
+      const totalW = leftPad + n * cardW + (n - 1) * gap;
+      return totalW - vw;
+    };
+
+    // Pin length = scroll runway. Give each card one full viewport height.
+    // e.g. 4 cards → 3 × innerHeight of vertical scroll to move through all cards.
+    const getPinLength = () => (steps.length - 1) * window.innerHeight;
+
+    const tween = gsap.to(scrollWrapper, {
+      x: () => -getScrollDist(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: container,
+        pin: true,
+        scrub: 0.3,
+        end: () => `+=${getPinLength()}`,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    return () => {
+      tween.kill();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [steps]);
+
+  if (!steps || steps.length === 0) return null;
+
+  return (
+    <section
+      ref={containerRef}
+      className="h-screen flex flex-col justify-center bg-primary text-base overflow-hidden relative z-30"
+    >
+      <div className="absolute inset-0 bg-primary opacity-50 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 relative z-10 w-full">
+        <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">How It Works</h2>
+        <h3 className="text-4xl md:text-5xl font-heading font-bold text-base">Our Signature Process</h3>
+      </div>
+
+      <div className="relative z-10 w-full overflow-hidden">
+        <div
+          ref={scrollWrapperRef}
+          className="flex flex-nowrap pl-[10vw] pb-8 gap-8 hide-scrollbar"
+        >
+          {steps.map((step, idx) => {
+            const Icon = iconMap[step.icon] || Sparkles;
+            return (
+              <div
+                key={idx}
+                className="w-[35vw] flex-shrink-0 flex flex-col gap-6"
+              >
+                {step.videoUrl ? (
+                  <div className="relative rounded-2xl h-[380px] flex-shrink-0 border border-secondary/50 overflow-hidden bg-primary/80 backdrop-blur-md shadow-2xl">
+                    <video
+                      src={step.videoUrl}
+                      poster={step.posterUrl}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="none"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-primary/80 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-secondary/50 flex flex-col justify-between group hover:border-[var(--secondary-color)] transition-colors h-[380px]">
+                    <div>
+                      <div className="flex justify-between items-start mb-12">
+                        <span className="text-6xl font-black text-[#F5F1EA]/10 group-hover:text-[#F5F1EA]/20 transition-colors font-heading tracking-tighter">
+                          {step.step}
+                        </span>
+                        <div className="w-16 h-16 rounded-full bg-primary/50 flex items-center justify-center text-secondary">
+                          <Icon className="w-8 h-8" />
+                        </div>
+                      </div>
+                      <h4 className="text-2xl font-bold font-heading mb-4 text-base">{step.title}</h4>
+                      <p className="text-secondary text-lg leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                )}
+
+                {step.videoUrl && (
+                  <div className="px-2">
+                    <h4 className="text-2xl font-bold font-heading mb-2 text-base">{step.title}</h4>
+                    <p className="text-secondary text-lg leading-relaxed">{step.description}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+================================================================================
+FILE: src/components/sections/ReviewSummary.tsx
+================================================================================
+import { Star } from "lucide-react";
+import AnimatedCounter from "../animations/AnimatedCounter";
+
+interface ReviewSummaryProps {
+  rating: number;
+  count: number;
+  link: string;
+}
+
+export default function ReviewSummary({ rating, count, link }: ReviewSummaryProps) {
+  if (!rating || !count) return null;
+
+  return (
+    <div className="flex flex-col items-center justify-center mb-12">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-5xl font-black font-heading text-base">{rating.toFixed(1)}</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex text-accent">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`w-5 h-5 ${i < Math.floor(rating) ? 'fill-current' : 'fill-transparent opacity-30'}`} 
+              />
+            ))}
+          </div>
+          <a 
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-secondary hover:text-base transition-colors underline decoration-gray-600 underline-offset-2"
+          >
+            Based on <AnimatedCounter value={count} duration={1500} /> Google reviews
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/sections/TrustBadges.tsx
+================================================================================
+"use client";
+
+import { ShieldCheck, Award, CheckCircle, FileText } from "lucide-react";
+
+interface TrustSignals {
+  yearsInBusiness: number;
+  aseCertified?: boolean;
+  bbbRating: string;
+  warrantyText: string;
+  insuredAndBonded: boolean;
+  estimateBeforeWorkPolicy: boolean;
+}
+
+export default function TrustBadges({ signals }: { signals: TrustSignals }) {
+  if (!signals) return null;
+
+  return (
+    <section className="py-24 bg-[#1A1815]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#F5F1EA]">Why Choose Us</h2>
+          <div className="w-24 h-1 bg-accent mx-auto mt-6 rounded-full" />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+          {signals.insuredAndBonded && (
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-[#24211D] flex items-center justify-center mb-6 border border-[#38332C] shadow-md text-accent">
+                <ShieldCheck className="w-10 h-10" />
+              </div>
+              <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-2">Insured & Bonded</h4>
+              <p className="text-[#A8A093]">Full coverage and peace of mind while your vehicle is in our care.</p>
+            </div>
+          )}
+
+          {signals.bbbRating && (
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-[#24211D] flex items-center justify-center mb-6 border border-[#38332C] shadow-md text-accent">
+                <Award className="w-10 h-10" />
+              </div>
+              <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-2">{signals.bbbRating} BBB Rating</h4>
+              <p className="text-[#A8A093]">Recognized for excellence and trustworthy business practices.</p>
+            </div>
+          )}
+
+          {signals.warrantyText && (
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-[#24211D] flex items-center justify-center mb-6 border border-[#38332C] shadow-md text-accent">
+                <CheckCircle className="w-10 h-10" />
+              </div>
+              <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-2">Satisfaction Guarantee</h4>
+              <p className="text-[#A8A093]">{signals.warrantyText}</p>
+            </div>
+          )}
+
+          {signals.estimateBeforeWorkPolicy && (
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-[#24211D] flex items-center justify-center mb-6 border border-[#38332C] shadow-md text-accent">
+                <FileText className="w-10 h-10" />
+              </div>
+              <h4 className="text-xl font-bold font-heading text-[#F5F1EA] mb-2">Upfront Pricing</h4>
+              <p className="text-[#A8A093]">No surprises. You'll always know the cost before we start the work.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+================================================================================
+FILE: src/components/ui/BeforeAfterSlider.tsx
+================================================================================
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { MoveHorizontal } from "lucide-react";
+
+interface BeforeAfterSliderProps {
+  beforeImage: string;
+  afterImage: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  simulateDirtyBefore?: boolean;
+}
+
+export default function BeforeAfterSlider({
+  beforeImage,
+  afterImage,
+  beforeLabel = "Before",
+  afterLabel = "After",
+  simulateDirtyBefore = false
+}: BeforeAfterSliderProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  // Use motion value for handle position (0 to 1)
+  const position = useMotionValue(0.5);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerWidth(containerRef.current.offsetWidth);
+    }
+    const handleResize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleDrag = (event: any, info: any) => {
+    if (!containerWidth) return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    // Calculate new position based on clientX relative to container
+    let clientX = info.point.x;
+    let newPos = (clientX - rect.left) / containerWidth;
+    newPos = Math.max(0, Math.min(1, newPos)); // clamp between 0 and 1
+    position.set(newPos);
+  };
+
+  const clipPathValue = useTransform(position, (pos) => `inset(0 ${100 - pos * 100}% 0 0)`);
+  const handleLeft = useTransform(position, (pos) => `${pos * 100}%`);
+
+  return (
+    <div 
+      ref={containerRef} 
+      className="relative w-full h-[400px] md:h-[600px] rounded-2xl overflow-hidden cursor-col-resize group bg-[#1A1815] border border-[#38332C] touch-none select-none"
+    >
+      {/* Before Image (Background) */}
+      <img
+        src={beforeImage}
+        alt={beforeLabel}
+        className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${
+          simulateDirtyBefore ? "contrast-75 brightness-[0.85] sepia-[.15] blur-[0.5px] saturate-50" : ""
+        }`}
+      />
+      <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-[#F5F1EA] px-3 py-1 rounded-full text-sm font-medium z-10 pointer-events-none border border-white/10">
+        {beforeLabel}
+      </div>
+
+      {/* After Image (Foreground, clipped) */}
+      <motion.div
+        className="absolute inset-0 z-20 pointer-events-none"
+        style={{ clipPath: clipPathValue }}
+      >
+        <img
+          src={afterImage}
+          alt={afterLabel}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-[#F5F1EA] px-3 py-1 rounded-full text-sm font-medium border border-white/10">
+          {afterLabel}
+        </div>
+      </motion.div>
+
+      {/* Draggable Handle */}
+      <motion.div
+        className="absolute top-0 bottom-0 z-30 flex items-center justify-center w-1 shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+        style={{ 
+          left: handleLeft,
+          backgroundColor: "var(--accent-color, #B8935F)",
+          x: "-50%" 
+        }}
+        drag="x"
+        dragElastic={0}
+        dragMomentum={false}
+        dragConstraints={containerRef}
+        onDrag={handleDrag}
+      >
+        <div className="w-10 h-10 bg-[#24211D] rounded-full flex items-center justify-center shadow-2xl border-2 border-accent">
+          <MoveHorizontal className="w-5 h-5 text-accent" />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/ui/CustomCursor.tsx
+================================================================================
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
+export default function CustomCursor() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Assume touch until proven otherwise to avoid flicker
+
+  useEffect(() => {
+    // Check if device has a coarse pointer (touch) or respects reduced motion
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    
+    setIsTouchDevice(isTouch || isReducedMotion);
+
+    if (isTouch || isReducedMotion) return;
+
+    const updateMousePosition = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName.toLowerCase() === "a" ||
+        target.tagName.toLowerCase() === "button" ||
+        target.closest("a") ||
+        target.closest("button")
+      ) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+    };
+
+    window.addEventListener("mousemove", updateMousePosition);
+    window.addEventListener("mouseover", handleMouseOver);
+
+    return () => {
+      window.removeEventListener("mousemove", updateMousePosition);
+      window.removeEventListener("mouseover", handleMouseOver);
+    };
+  }, []);
+
+  if (isTouchDevice) return null;
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:flex items-center justify-center border border-base"
+      style={{
+        translateX: mousePosition.x - 16,
+        translateY: mousePosition.y - 16,
+      }}
+      animate={{
+        scale: isHovering ? 2 : 1,
+        backgroundColor: isHovering ? "rgba(255, 255, 255, 1)" : "rgba(255, 255, 255, 0)",
+      }}
+      transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+    >
+      <motion.div 
+        className="w-1 h-1 bg-base rounded-full"
+        animate={{ opacity: isHovering ? 0 : 1 }}
+      />
+    </motion.div>
+  );
+}
+
+
+================================================================================
+FILE: src/components/ui/NoiseOverlay.tsx
+================================================================================
+export default function NoiseOverlay() {
+  return (
+    <div
+      className="fixed inset-0 pointer-events-none z-[9998] mix-blend-overlay opacity-[0.03]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
+
+
+================================================================================
+FILE: src/config/examples/detailing.config.ts
+================================================================================
+import { SiteConfig } from '../types';
+
+export const detailingConfig: SiteConfig = {
+  businessName: "Elite Auto Detail",
+  tagline: "Perfection in every pixel and polish.",
+  logoUrl: "/images/logo-detailing.png",
+  phone: "(555) 123-4567",
+  email: "hello@eliteautodetail.com",
+  address: "123 Shine Avenue",
+  city: "Los Angeles",
+  state: "CA",
+  zip: "90001",
+  serviceArea: ["Los Angeles", "Santa Monica", "Beverly Hills", "Glendale"],
+  hoursOfOperation: "Mon-Fri: 8am - 6pm, Sat: 9am - 4pm",
+  
+  fonts: {
+    heading: "Outfit",
+    body: "Inter",
+  },
+  
+  brandColors: {
+    primary: "#1A1815",
+    secondary: "#A8A093",
+    accent: "#B8935F",
+    neutralBase: "#F5F1EA"
+  },
+  
+  heroImage: "/images/hero-mercedes.png",
+  heroImageAlt: "Premium dark sports car detailing showcase",
+  heroVideoUrl: "/videos/hero.mp4",
+  heroVideoFallback: "/videos/hero.mp4",
+  heroAnimationMode: 'detailing',
+  
+  galleryImages: [
+    {
+      beforeUrl: "/images/gallery/home-before.jpg",
+      afterUrl: "/images/gallery/home-after.jpg",
+      alt: "Car Detailing Before and After"
+    }
+  ],
+  
+  teamMembers: [
+    {
+      name: "Marcus Johnson",
+      photo: "/images/team/marcus.jpg",
+      role: "Lead Detailer",
+      certifications: ["IDA Certified", "Ceramic Pro Installer"]
+    }
+  ],
+  
+  services: [
+    {
+      slug: "ceramic-coating",
+      name: "Ceramic Coating",
+      shortDescription: "Long-lasting protection and extreme gloss for your vehicle's exterior.",
+      longDescription: "Our premium ceramic coating packages offer years of protection against UV rays, chemical stains, and etching. Unlike traditional waxes that wash away in a few months, ceramic coatings bond at a molecular level to your clear coat, creating a semi-permanent sacrificial layer.\n\nNot only does it provide a candy-like gloss, but it also makes your car incredibly easy to wash. Dirt, mud, and grime have a much harder time sticking to the hydrophobic surface, meaning your car stays cleaner, longer.",
+      priceRange: "$800 - $1,500+",
+      image: "/images/services/ceramic-coating.jpg",
+      serviceIncludes: [
+        "Thorough Hand Wash & Decontamination",
+        "Chemical Iron Removal",
+        "Clay Bar Treatment",
+        "1-Step or Multi-Step Paint Correction",
+        "Surface Panel Wipe Down",
+        "Application of 9H Ceramic Coating",
+        "Trim and Plastic Dressing",
+        "Tire and Wheel Face Coating"
+      ],
+      beforeImage: "/images/gallery/ceramic-before.png",
+      afterImage: "/images/gallery/ceramic-after.png",
+      processSteps: [
+        { step: "01", title: "Decontamination", description: "We strip old waxes, remove iron deposits, and clay the surface to ensure it is completely bare.", icon: "droplets", videoUrl: "/videos/decontamination.mp4", posterUrl: "/images/gallery/ceramic-before.png" },
+        { step: "02", title: "Paint Correction", description: "We machine polish the paint to remove swirls and scratches, creating a flawless canvas.", icon: "sparkles", videoUrl: "/videos/paint-correction.mp4", posterUrl: "/images/gallery/paint-correction-before.jpg" },
+        { step: "03", title: "Coating Application", description: "The coating is meticulously hand-applied panel by panel and allowed to flash before leveling.", icon: "shield", videoUrl: "/videos/coating-application.mp4", posterUrl: "/images/gallery/paint-correction-after.jpg" },
+        { step: "04", title: "Curing", description: "The vehicle remains in our climate-controlled shop to cure properly before it hits the road.", icon: "clock", videoUrl: "/videos/curing.mp4", posterUrl: "/images/gallery/ceramic-after.png" }
+      ],
+      faqs: [
+        { question: "How long does ceramic coating last?", answer: "With proper maintenance, our coatings last between 2 to 5 years depending on the package you choose and how often the vehicle is driven." },
+        { question: "Can I wash my car normally?", answer: "We recommend pH-neutral soaps and two-bucket wash methods. Avoid automatic car washes with harsh brushes, as they will degrade the coating." },
+        { question: "Does this prevent rock chips?", answer: "No. Ceramic coating protects against chemicals, UV rays, and light micro-marring, but it does not prevent rock chips. For rock chip protection, you need Paint Protection Film (PPF)." },
+        { question: "Do I ever need to wax my car again?", answer: "No! The ceramic coating replaces the need for wax entirely. Applying wax over a ceramic coating actually masks its hydrophobic properties." }
+      ]
+    },
+    {
+      slug: "interior-detailing",
+      name: "Deep Interior Detailing",
+      shortDescription: "Complete interior reset, from steam cleaning to leather conditioning.",
+      longDescription: "We clean, sanitize, and protect every surface of your interior. Say goodbye to stains, odors, and dust. We don't just wipe things down; we use compressed air, steam, and hot water extraction to pull years of grime out of the upholstery.\n\nWhether you're preparing to sell your vehicle or just want to feel that 'new car' cleanliness again, our Deep Interior Detailing package is designed to reset your cabin back to factory condition.",
+      priceRange: "$150 - $350",
+      image: "/images/services/interior-detailing.jpg",
+      serviceIncludes: [
+        "Deep Vacuum of all Carpets and Seats",
+        "Hot Water Extraction for Stains",
+        "Leather Cleaning and Conditioning",
+        "Steam Cleaning of Vents and Cup Holders",
+        "Interior Glass and Mirror Cleaning",
+        "UV Protection on all Plastics/Dash",
+        "Pet Hair Removal (if applicable)",
+        "Odor Neutralization Treatment"
+      ],
+      beforeImage: "/images/gallery/interior-before.jpg",
+      afterImage: "/images/gallery/interior-after.jpg",
+      processSteps: [
+        { step: "01", title: "Dry Extraction", description: "We use high-powered vacuums and compressed air to blow out and remove all loose dirt, dust, and pet hair.", icon: "wind", videoUrl: "/videos/dry-extraction.mp4", posterUrl: "/images/gallery/interior-before.jpg" },
+        { step: "02", title: "Stain Treatment", description: "Carpets and upholstery are pre-treated and agitated to lift stubborn stains and spills.", icon: "droplet", videoUrl: "/videos/stain-treatment.mp4", posterUrl: "/images/gallery/interior-before.jpg" },
+        { step: "03", title: "Steam Cleaning", description: "High-temperature steam is used to sanitize surfaces and clean hard-to-reach crevices like cup holders and vents.", icon: "thermometer", videoUrl: "/videos/steam-cleaning.mp4", posterUrl: "/images/gallery/interior-after.jpg" },
+        { step: "04", title: "Condition & Protect", description: "All plastics, vinyls, and leathers are conditioned and dressed with a UV-protectant, non-greasy finish.", icon: "shield-check", videoUrl: "/videos/condition-protect.mp4", posterUrl: "/images/gallery/interior-after.jpg" }
+      ],
+      faqs: [
+        { question: "Do you remove pet hair?", answer: "Yes, pet hair removal is included in our deep interior package, though extremely severe cases may incur an extra time-based fee." },
+        { question: "Can you get out every stain?", answer: "We can remove about 95% of stains. However, certain spills that have permanently dyed the fabric or carpet fibers cannot be fully reversed." },
+        { question: "How long will my seats stay wet?", answer: "We use hot water extractors that pull out most of the moisture. In most cases, the seats will be completely dry within a few hours." },
+        { question: "Does this include cleaning the headliner?", answer: "We lightly spot-clean headliners. Aggressive cleaning can cause the headliner adhesive to fail and sag, so we treat it delicately." }
+      ]
+    }
+  ],
+
+  pricingPackages: [
+    {
+      name: "Basic Detail",
+      price: "$150",
+      features: ["Exterior Wash", "Wheel Cleaning", "Interior Vacuum", "Window Cleaning"]
+    },
+    {
+      name: "Premium Detail",
+      price: "$299",
+      isPopular: true,
+      features: ["Everything in Basic", "Clay Bar Treatment", "Hand Wax", "Leather Conditioning", "Carpet Shampoo"]
+    },
+    {
+      name: "Ultimate Detail",
+      price: "$599",
+      features: ["Everything in Premium", "1-Step Paint Correction", "1-Year Ceramic Coating", "Engine Bay Detail"]
+    }
+  ],
+
+  certifications: [
+    { name: "IDA Certified", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" }, // Placeholders
+    { name: "Ceramic Pro", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" },
+    { name: "BBB A+", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" },
+    { name: "Insured", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" },
+  ],
+
+  processSteps: [
+    { step: "01", title: "Intake", description: "Thorough inspection of your vehicle.", icon: "ClipboardList", videoUrl: "/videos/intake.mp4", posterUrl: "/images/gallery/home-before.jpg" },
+    { step: "02", title: "Prep", description: "Decontamination and deep cleaning.", icon: "Droplets", videoUrl: "/videos/prep.mp4", posterUrl: "/images/gallery/paint-correction-before.jpg" },
+    { step: "03", title: "Refine", description: "Paint correction and polishing.", icon: "Sparkles", videoUrl: "/videos/refine.mp4", posterUrl: "/images/gallery/paint-correction-after.jpg" },
+  ],
+  
+  trustSignals: {
+    yearsInBusiness: 8,
+    aseCertified: false, // More relevant for mechanics
+    bbbRating: "A+",
+    warrantyText: "Satisfaction guaranteed on all detailing packages.",
+    insuredAndBonded: true,
+    estimateBeforeWorkPolicy: true,
+  },
+  
+  testimonials: [
+    {
+      name: "Sarah T.",
+      rating: 5,
+      text: "They made my 5-year-old SUV look better than the day I bought it. The ceramic coating is magic!",
+      date: "2023-10-15",
+      service: "Ceramic Coating"
+    }
+  ],
+  
+  googleRating: 4.9,
+  googleReviewCount: 128,
+  googleReviewLink: "https://g.page/review/example",
+  googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=...", // placeholder
+  
+  socialLinks: {
+    instagram: "https://instagram.com/eliteautodetail",
+    facebook: "https://facebook.com/eliteautodetail"
+  },
+
+  featuredTransformation: {
+    title: "From Oxidized and Neglected to Mirror-Perfect",
+    vehicleDescription: "2018 Audi A6 — 4 years of daily driving, zero protection",
+    story: "This Audi came in looking every bit of its neglected years — the paint was heavily oxidized with deep swirl marks from years of automatic car washes, the interior smelled of old coffee and pet dander, and the wheels were caked with stubborn iron deposits. We started with a full two-stage paint correction to bring the clear coat back to life, followed by a 5-year ceramic coating application. Inside, we performed a full deep interior detail including hot water extraction and leather conditioning. The owner picked it up and asked if we'd repainted it.",
+    beforeImage: "/images/gallery/ceramic-before.png",
+    afterImage: "/images/gallery/ceramic-after.png",
+    servicesUsed: [
+      { name: "Paint Correction", slug: "ceramic-coating" },
+      { name: "Ceramic Coating", slug: "ceramic-coating" },
+      { name: "Deep Interior Detailing", slug: "interior-detailing" }
+    ],
+    testimonialQuote: "They made my 5-year-old SUV look better than the day I bought it. The ceramic coating is magic!",
+    testimonialAuthor: "Sarah T."
+  },
+  
+  blogPosts: [
+    {
+      slug: "benefits-of-ceramic-coating",
+      title: "Is Ceramic Coating Worth the Investment?",
+      excerpt: "Discover why more car owners are choosing ceramic coating over traditional wax.",
+      image: "/images/blog/ceramic-benefits.jpg",
+      date: "2023-11-01",
+      content: "Full markdown content goes here..."
+    }
+  ]
+};
+
+
+================================================================================
+FILE: src/config/examples/mechanic.config.ts
+================================================================================
+import { SiteConfig } from '../types';
+
+export const mechanicConfig: SiteConfig = {
+  businessName: "Reliable Auto Repair",
+  tagline: "Honest diagnostics. Expert repairs. Back on the road.",
+  logoUrl: "/images/logo-mechanic.png",
+  phone: "(555) 987-6543",
+  email: "service@reliableautorepair.com",
+  address: "456 Main Street",
+  city: "Austin",
+  state: "TX",
+  zip: "78701",
+  serviceArea: ["Austin", "Round Rock", "Cedar Park"],
+  hoursOfOperation: "Mon-Fri: 7:30am - 5:30pm",
+  
+  brandColors: {
+    primary: "#b91c1c", // red-700 (trust, urgency, automotive)
+    secondary: "#1f2937", // gray-800
+    accent: "#facc15", // yellow-400
+  },
+  
+  heroImage: "/images/hero-mercedes.png",
+  heroImageAlt: "Auto mechanic working on an engine in a professional shop",
+  heroVideoUrl: "/videos/hero.mp4",
+  heroVideoFallback: "/videos/hero.mp4",
+  heroAnimationMode: 'repair',
+  
+  galleryImages: [], // Less relevant for mechanics, maybe before/after engine rebuilds
+  
+  teamMembers: [
+    {
+      name: "David Smith",
+      photo: "/images/team/david.jpg",
+      role: "Master Technician",
+      certifications: ["ASE Master Certified", "Toyota Master Tech"]
+    }
+  ],
+  
+  services: [
+    {
+      slug: "brake-repair",
+      name: "Brake Repair & Replacement",
+      shortDescription: "Stop safely. Full inspection, pad replacement, and rotor resurfacing.",
+      longDescription: "Your safety is our priority. We use premium OEM or equivalent brake pads and rotors for quiet, confident stopping power.",
+      priceRange: "Starting at $199 per axle",
+      image: "/images/services/brakes.jpg",
+      faqs: [
+        { question: "How do I know if I need new brakes?", answer: "Squeaking, grinding, or a pulsating pedal are common signs." }
+      ]
+    },
+    {
+      slug: "check-engine-light",
+      name: "Check Engine Light Diagnostics",
+      shortDescription: "Advanced computer diagnostics to pinpoint the exact issue.",
+      longDescription: "We don't just guess. We plug in state-of-the-art diagnostic tools to read the codes and visually inspect the components before recommending any repairs.",
+      priceRange: "$95 Diagnostic Fee",
+      image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80",
+      faqs: [
+        { question: "Will the diagnostic fee apply to the repair?", answer: "Yes, if you choose to proceed with the repair, we waive the diagnostic fee." }
+      ]
+    }
+  ],
+  
+  trustSignals: {
+    yearsInBusiness: 25,
+    aseCertified: true,
+    bbbRating: "A+",
+    warrantyText: "24-Month / 24,000-Mile Nationwide Warranty on all repairs.",
+    insuredAndBonded: true,
+    estimateBeforeWorkPolicy: true,
+  },
+  
+  testimonials: [
+    {
+      name: "John D.",
+      rating: 5,
+      text: "Only mechanic I trust. They showed me exactly what was wrong and gave me a fair price before starting.",
+      date: "2023-09-22",
+      service: "Brake Repair"
+    }
+  ],
+  
+  googleReviewLink: "https://g.page/review/example2",
+  googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=...", // placeholder
+  
+  socialLinks: {
+    facebook: "https://facebook.com/reliableautorepair"
+  },
+  
+  blogPosts: []
+};
+
+
+================================================================================
+FILE: src/config/examples/victory-collision.config.ts
+================================================================================
+import { SiteConfig } from '../types';
+
+/*
+ * TODO FOR BUSINESS OWNER:
+ * 1. Confirm hoursOfOperation
+ * 2. Provide a real Google Review Link (googleReviewLink)
+ * 3. Provide a real Google Maps Embed URL (googleMapsEmbedUrl)
+ * 4. Provide Team Member details (names, roles, photos)
+ * 5. Provide real Testimonials from Google Reviews
+ * 6. Provide Gallery Images (Before/After photos)
+ * 7. Provide Logo image file (replace /images/logo-placeholder.png)
+ * 8. Provide specific Pricing (currently using "Free Estimate" or "Call for quote")
+ * 9. Provide Hero image/video and Service photos if desired
+ */
+
+export const victoryCollisionConfig: SiteConfig = {
+  businessName: "Victory Collision & Auto Repair",
+  tagline: "Expert Collision & Auto Repair.",
+  logoUrl: "/images/logo-placeholder.png", // TODO: Need real logo
+  phone: "(516) 830-5997",
+  email: "info@victorycollision.com", // Placeholder
+  address: "2215 Jericho Tpke",
+  city: "New Hyde Park",
+  state: "NY",
+  zip: "11040",
+  serviceArea: ["New Hyde Park", "Floral Park", "Garden City Park", "Mineola"],
+  hoursOfOperation: "Mon-Fri: 8:00am - 6:00pm, Sat: 9:00am - 2:00pm", // TODO: Confirm with owner
+  
+  brandColors: {
+    primary: "#1A1815", // dark-grey
+    secondary: "#A8A093", // gray text
+    accent: "#facc15", // yellow-400
+  },
+  
+  heroImage: "https://images.unsplash.com/photo-1599256621730-535171e28f32?w=1600&q=80", // Placeholder Unsplash
+  heroImageAlt: "Auto mechanic working on an engine in a professional shop",
+  heroAnimationMode: 'repair',
+  
+  googleRating: 5.0,
+  googleReviewCount: 10,
+  googleReviewLink: "#TODO-GOOGLE-REVIEW-LINK", // TODO
+  googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3023.005269421564!2d-73.66863612372804!3d40.73990957138948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c263e517220309%3A0xd745a293f6023a5b!2sVictory%20Collision%20%26%20Auto%20Repair!5e0!3m2!1sen!2sin!4v1790332604421!5m2!1sen!2sin",
+  
+  trustSignals: {
+    yearsInBusiness: 1, // TODO: Confirm years in business
+    aseCertified: true,
+    bbbRating: "A+",
+    warrantyText: "Quality warranty on collision bodywork and paint.",
+    insuredAndBonded: true,
+    estimateBeforeWorkPolicy: true,
+  },
+  
+  services: [
+    {
+      slug: "collision-repair",
+      name: "Collision Repair",
+      shortDescription: "Full-service auto body and collision repair to get your vehicle back to factory condition.",
+      longDescription: "From minor fender benders to major collision damage, our expert technicians use advanced tools and techniques to restore the structural integrity and appearance of your vehicle.",
+      priceRange: "Free Estimate",
+      image: "/images/services/brakes.jpg",
+      faqs: [
+        { question: "Do you work with my insurance company?", answer: "Yes, we work directly with all major insurance companies to handle your claim efficiently." },
+        { question: "How long will the repair take?", answer: "Repair times vary based on the extent of damage and parts availability. We will provide an estimated timeline with your free quote." }
+      ]
+    },
+    {
+      slug: "dent-bumper-repair",
+      name: "Dent & Bumper Repair",
+      shortDescription: "Fast, seamless repairs for dents, dings, and cracked bumpers.",
+      longDescription: "Whether it's a parking lot ding or a cracked bumper, we offer paintless dent repair and expert plastic welding/refinishing to make your car look flawless again.",
+      priceRange: "Free Estimate",
+      image: "/images/services/interior-detailing.jpg",
+      faqs: [
+        { question: "Can you fix a plastic bumper?", answer: "Yes, we specialize in repairing and refinishing plastic bumpers without having to replace the entire part when possible." }
+      ]
+    },
+    {
+      slug: "paint-matching-refinishing",
+      name: "Paint Matching & Refinishing",
+      shortDescription: "Computerized color matching for a flawless finish.",
+      longDescription: "We utilize advanced computerized paint matching systems to ensure the new paint blends perfectly with your vehicle's original color, followed by professional clear coating for lasting durability.",
+      priceRange: "Call for quote",
+      image: "/images/services/ceramic-coating.jpg",
+      faqs: [
+        { question: "Will the new paint match exactly?", answer: "Absolutely. Our computerized color matching technology ensures a seamless blend with your existing paint." }
+      ]
+    },
+    {
+      slug: "general-auto-repair",
+      name: "General Auto Repair & Diagnostics",
+      shortDescription: "Comprehensive mechanical repair and computer diagnostics.",
+      longDescription: "Beyond bodywork, our shop offers full mechanical services. From check engine lights and brake replacements to suspension repairs, we ensure your vehicle is safe and running smoothly.",
+      priceRange: "Call for quote",
+      image: "/images/services/diagnostics.jpg",
+      faqs: [
+        { question: "Do you do mechanical work as well as body work?", answer: "Yes! We are a full-service shop equipped to handle both collision repair and general mechanical diagnostics/repairs." }
+      ]
+    }
+  ],
+  
+  galleryImages: [
+    {
+      beforeUrl: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80",
+      afterUrl: "https://images.unsplash.com/photo-1600049449015-772c72b226e6?auto=format&fit=crop&q=80",
+      alt: "Collision Repair Before and After"
+    }
+  ],
+  teamMembers: [
+    {
+      name: "Mike Johnson",
+      photo: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80",
+      role: "Lead Technician",
+      certifications: ["ASE Certified Master Tech"]
+    }
+  ],
+  testimonials: [
+    {
+      name: "Sarah T.",
+      rating: 5,
+      text: "Victory Collision did an amazing job fixing my car after a fender bender. It looks brand new! Highly recommend them.",
+      date: "2024-05-12",
+      service: "Collision Repair"
+    },
+    {
+      name: "James D.",
+      rating: 5,
+      text: "Fast, professional, and honest. They handled my insurance claim and made the whole process stress-free.",
+      date: "2024-03-28",
+      service: "Dent Repair"
+    }
+  ],
+  processSteps: [
+    { step: "01", title: "Estimate & Approval", description: "We provide a thorough, free estimate and work directly with your insurance company.", icon: "ClipboardList", videoUrl: "/videos/intake.mp4", posterUrl: "/images/gallery/home-before.jpg" },
+    { step: "02", title: "Disassembly & Repair", description: "Our expert technicians dismantle the damaged area and repair the structural integrity of your vehicle.", icon: "Shield", videoUrl: "/videos/prep.mp4", posterUrl: "/images/gallery/paint-correction-before.jpg" },
+    { step: "03", title: "Paint & Refinish", description: "We use computerized color matching to ensure a flawless finish that perfectly matches your factory paint.", icon: "Sparkles", videoUrl: "/videos/refine.mp4", posterUrl: "/images/gallery/paint-correction-after.jpg" },
+    { step: "04", title: "Final Inspection", description: "Every vehicle undergoes a rigorous quality check before it is returned to you.", icon: "CheckCircle", videoUrl: "/videos/hero.mp4", posterUrl: "/images/hero-mercedes.png" }
+  ],
+  pricingPackages: [
+    {
+      name: "Minor Dent Repair",
+      price: "Starting at $150",
+      features: ["Paintless Dent Repair (PDR)", "Same-Day Service", "No Paint Required", "Lifetime Warranty"]
+    },
+    {
+      name: "Bumper Replacement",
+      price: "Call for Quote",
+      isPopular: true,
+      features: ["OEM or Aftermarket Parts", "Computerized Paint Matching", "Seamless Installation", "Insurance Assistance"]
+    },
+    {
+      name: "Full Collision Repair",
+      price: "Free Estimate",
+      features: ["Frame Straightening", "Complete Body Work", "Custom Paint Matching", "Direct Insurance Billing"]
+    }
+  ],
+  socialLinks: {},
+  blogPosts: []
+};
+
+
+================================================================================
+FILE: src/config/site.config.ts
+================================================================================
+import { victoryCollisionConfig } from './examples/victory-collision.config';
+// import { detailingConfig } from './examples/detailing.config';
+// import { mechanicConfig } from './examples/mechanic.config';
+
+// To switch templates, simply export a different config object here.
+export const siteConfig = victoryCollisionConfig;
+
+
+================================================================================
+FILE: src/config/types.ts
+================================================================================
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
+export interface Service {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  longDescription: string;
+  priceRange: string;
+  image: string;
+  faqs: ServiceFaq[];
+  serviceIncludes?: string[];
+  beforeImage?: string;
+  afterImage?: string;
+  processSteps?: { step: string; title: string; description: string; icon: string; videoUrl?: string; posterUrl?: string; }[];
+}
+
+export interface Testimonial {
+  name: string;
+  rating: number; // 1-5
+  text: string;
+  date: string;
+  service: string;
+}
+
+export interface TeamMember {
+  name: string;
+  photo: string;
+  role: string;
+  certifications: string[];
+}
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  content: string; // Markdown or HTML string
+}
+
+export interface FeaturedTransformation {
+  title: string;
+  vehicleDescription: string;
+  story: string;
+  beforeImage: string;
+  afterImage: string;
+  servicesUsed: { name: string; slug: string }[];
+  testimonialQuote?: string;
+  testimonialAuthor?: string;
+}
+
+export interface BeforeAfterImage {
+  beforeUrl: string;
+  afterUrl: string;
+  alt: string;
+}
+
+export interface SiteConfig {
+  businessName: string;
+  tagline: string;
+  logoUrl: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  serviceArea: string[];
+  hoursOfOperation: string;
+  
+  fonts?: {
+    heading: string;
+    body: string;
+  };
+
+  brandColors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    neutralBase?: string;
+  };
+  
+  heroImage: string;
+  heroImageAlt?: string;
+  heroVideoUrl?: string;
+  heroVideoFallback?: string;
+  heroAnimationMode?: 'detailing' | 'repair';
+  
+  galleryImages: BeforeAfterImage[];
+  teamMembers: TeamMember[];
+  services: Service[];
+  featuredTransformation?: FeaturedTransformation;
+  
+  certifications?: { name: string; logo: string }[];
+  processSteps?: { step: string; title: string; description: string; icon: string; videoUrl?: string; posterUrl?: string; }[];
+  pricingPackages?: { name: string; price: string; isPopular?: boolean; features: string[] }[];
+  
+  trustSignals: {
+    yearsInBusiness: number;
+    aseCertified: boolean;
+    bbbRating: string;
+    warrantyText: string;
+    insuredAndBonded: boolean;
+    estimateBeforeWorkPolicy: boolean;
+  };
+  
+  testimonials: Testimonial[];
+  
+  googleRating?: number;
+  googleReviewCount?: number;
+  googleReviewLink: string;
+  googleMapsEmbedUrl: string;
+  socialLinks: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    youtube?: string;
+  };
+  
+  blogPosts: BlogPost[];
+}
+
+
+================================================================================
+FILE: src/utils/motion.ts
+================================================================================
+export const easing = {
+  premium: [0.22, 1, 0.36, 1] as const, // Custom cubic-bezier for a buttery, responsive feel
+  easeOut: [0.33, 1, 0.68, 1] as const,
+  easeIn: [0.32, 0, 0.67, 0] as const,
+};
+
+export const durations = {
+  fast: 0.2,
+  medium: 0.4,
+  slow: 0.6,
+  reveal: 0.8,
+};
+
+export const getFramerMotionTransition = (
+  duration: number = durations.medium,
+  delay: number = 0
+) => ({
+  duration,
+  delay,
+  ease: easing.premium,
+});
+
+
+================================================================================
+FILE: tailwind.config.ts
+================================================================================
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: "var(--primary-color)",
+        secondary: "var(--secondary-color)",
+        accent: "var(--accent-color)",
+        base: "var(--neutral-base)",
+        surface: "var(--surface-color)",
+        "surface-input": "var(--surface-input)",
+        "border-dark": "var(--border-dark)",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"],
+        heading: ["var(--font-outfit)", "sans-serif"],
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' }, // Scroll half since we duplicated 4x
+        }
+      },
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
+      transitionTimingFunction: {
+        premium: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      transitionDuration: {
+        fast: '200ms',
+        medium: '400ms',
+        slow: '600ms',
+      }
+    },
+  },
+  plugins: [],
+};
+export default config;
+
+
+================================================================================
+FILE: tsconfig.json
+================================================================================
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "target": "ES2017"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+
+

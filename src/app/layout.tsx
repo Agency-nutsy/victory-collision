@@ -6,7 +6,7 @@ import SmoothScroll from "@/components/layout/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollProgress from "@/components/animations/ScrollProgress";
-import CustomCursor from "@/components/ui/CustomCursor";
+import FloatingCallButton from "@/components/ui/FloatingCallButton";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -54,13 +54,14 @@ export default function RootLayout({
         } as React.CSSProperties}
       >
         <NoiseOverlay />
-        <CustomCursor />
+
         <SmoothScroll>
           <ScrollProgress />
           <Navbar />
           <main className="min-h-screen flex flex-col">{children}</main>
           <Footer />
         </SmoothScroll>
+        <FloatingCallButton />
       </body>
     </html>
   );

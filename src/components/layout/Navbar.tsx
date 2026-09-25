@@ -33,6 +33,7 @@ export default function Navbar() {
                 ))}
               </div>
             </div>
+            <Link href="/gallery" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">Gallery</Link>
             <Link href="/about" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">About</Link>
             <Link href="/contact" className="text-[#D6D0C5] hover:text-accent transition-colors duration-medium ease-premium font-medium active:scale-[0.98]">Contact</Link>
           </div>
@@ -71,6 +72,7 @@ export default function Navbar() {
                 - {service.name}
               </Link>
             ))}
+            <Link href="/gallery" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">Gallery</Link>
             <Link href="/about" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">About</Link>
             <Link href="/contact" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-[#F5F1EA] hover:text-accent transition-colors rounded-md">Contact</Link>
             

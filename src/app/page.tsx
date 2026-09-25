@@ -1,22 +1,24 @@
 import Hero from "@/components/sections/Hero";
 import { siteConfig } from "@/config/site.config";
 import Link from "next/link";
-import { ShieldCheck, Star, Award, CheckCircle } from "lucide-react";
+import { Star } from "lucide-react";
 import AnimatedCounter from "@/components/animations/AnimatedCounter";
 import TiltCard from "@/components/animations/TiltCard";
 import MagneticButton from "@/components/animations/MagneticButton";
-import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import ProcessTimeline from "@/components/sections/ProcessTimeline";
 import PricingTable from "@/components/sections/PricingTable";
 import TrustBadges from "@/components/sections/TrustBadges";
 import ReviewSummary from "@/components/sections/ReviewSummary";
-import FeaturedTransformationSection from "@/components/sections/FeaturedTransformationSection";
+import StatsStrip from "@/components/sections/StatsStrip";
+import InsurancePartners from "@/components/sections/InsurancePartners";
+import WhyChooseUs from "@/components/sections/WhyChooseUs";
+import LocationMap from "@/components/sections/LocationMap";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      
+      <StatsStrip />
       {/* Services Overview */}
       <section className="py-24 bg-[#1A1815]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,22 +64,22 @@ export default function Home() {
       </section>
 
       <TrustBadges signals={siteConfig.trustSignals} />
+      <InsurancePartners />
 
       {/* Before/After Showcase */}
       <section className="py-24 bg-[#1A1815] border-b border-[#38332C] overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-4">See the Difference</h2>
             <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
-              Swipe the slider to see how our premium detailing transforms vehicles.
+              Real results from our collision repair and detailing work.
             </p>
           </div>
-          <div className="shadow-2xl rounded-2xl">
-            <BeforeAfterSlider 
-              beforeImage={siteConfig.galleryImages[0]?.beforeUrl || "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80"}
-              afterImage={siteConfig.galleryImages[0]?.afterUrl || "https://images.unsplash.com/photo-1600049449015-772c72b226e6?auto=format&fit=crop&q=80"}
-              beforeLabel="Before"
-              afterLabel="After"
+          <div className="shadow-2xl rounded-2xl overflow-hidden border border-[#38332C]">
+            <img 
+              src="/images/gallery/before after.webp" 
+              alt="Before and After Collision Repair" 
+              className="w-full h-auto object-contain"
             />
           </div>
         </div>
@@ -102,27 +104,50 @@ export default function Home() {
             count={siteConfig.googleReviewCount || 0} 
             link={siteConfig.googleReviewLink} 
           />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {siteConfig.testimonials.map((testimonial, i) => (
-              <TiltCard key={i}>
-                <div className="bg-[#24211D] p-8 rounded-2xl border border-[#38332C] hover:border-accent/30 transition-colors h-full flex flex-col shadow-lg">
-                  <div className="flex items-center mb-4 space-x-1">
-                    {[...Array(testimonial.rating)].map((_, j) => (
-                      <Star key={j} className="w-5 h-5 text-accent fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-[#E6E1D8] italic mb-6 leading-relaxed flex-grow">"{testimonial.text}"</p>
-                  <div className="mt-auto">
-                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
-                    <p className="text-sm text-[#A8A093]">{testimonial.service} • {new Date(testimonial.date).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
         </div>
+
+        <style>{`
+            @keyframes marquee-reviews {
+              0% { transform: translateX(0%); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee-reviews {
+              animation: marquee-reviews 40s linear infinite;
+              display: flex;
+              width: max-content;
+            }
+            .animate-marquee-reviews:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+          <div className="relative mt-16 overflow-hidden w-full">
+            <div className="animate-marquee-reviews gap-6 px-4">
+              {[...Array(2)].map((_, arrayIndex) => (
+                <div key={arrayIndex} className="flex gap-6">
+                  {siteConfig.testimonials.map((testimonial, i) => (
+                    <div key={`${arrayIndex}-${i}`} className="w-[350px] sm:w-[450px] flex-shrink-0">
+                      <div className="bg-[#24211D] p-8 rounded-2xl border border-[#38332C] hover:border-accent/30 transition-colors h-full flex flex-col shadow-lg">
+                        <div className="flex items-center mb-4 space-x-1">
+                          {[...Array(testimonial.rating)].map((_, j) => (
+                            <Star key={j} className="w-5 h-5 text-accent fill-current" />
+                          ))}
+                        </div>
+                        <p className="text-[#E6E1D8] italic mb-6 leading-relaxed flex-grow">"{testimonial.text}"</p>
+                        <div className="mt-auto">
+                          <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
+                          <p className="text-sm text-[#A8A093]">{testimonial.service} • {new Date(testimonial.date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
       </section>
+
+      <WhyChooseUs />
+      <LocationMap />
 
       {/* Final CTA */}
       <section className="py-24 relative z-50 bg-[#141210] border-t border-[#38332C]">

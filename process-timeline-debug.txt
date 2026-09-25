@@ -1,0 +1,583 @@
+﻿===== ProcessTimeline.tsx =====
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ClipboardList, Droplets, Sparkles, Shield, CheckCircle, type LucideIcon } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const iconMap: Record<string, LucideIcon> = {
+  ClipboardList,
+  Droplets,
+  Sparkles,
+  Shield,
+  CheckCircle,
+};
+
+interface ProcessStep {
+  step: string;
+  title: string;
+  description: string;
+  icon: string;
+  videoUrl?: string;
+  posterUrl?: string;
+}
+
+export default function ProcessTimeline({ steps }: { steps: ProcessStep[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (!isDesktop) return;
+    if (!containerRef.current || !scrollWrapperRef.current) return;
+
+    const container = containerRef.current;
+    const scrollWrapper = scrollWrapperRef.current;
+
+    // Horizontal translation distance = how far to slide the track
+    const getScrollDist = () => {
+      const vw = window.innerWidth;
+      const cardW = vw * 0.35;
+      const gap = 32; // gap-8 = 2rem = 32px
+      const leftPad = vw * 0.10;
+      const n = steps.length;
+      const totalW = leftPad + n * cardW + (n - 1) * gap;
+      return totalW - vw;
+    };
+
+    // Pin length = scroll runway. Give each card one full viewport height.
+    // e.g. 4 cards â†’ 3 Ã— innerHeight of vertical scroll to move through all cards.
+    const getPinLength = () => (steps.length - 1) * window.innerHeight;
+
+    const tween = gsap.to(scrollWrapper, {
+      x: () => -getScrollDist(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: container,
+        pin: true,
+        scrub: 0.3,
+        end: () => `+=${getPinLength()}`,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    return () => {
+      tween.kill();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [steps]);
+
+  if (!steps || steps.length === 0) return null;
+
+  return (
+    <section
+      ref={containerRef}
+      className="h-screen flex flex-col justify-center bg-primary text-base overflow-hidden relative z-30"
+    >
+      <div className="absolute inset-0 bg-primary opacity-50 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 relative z-10 w-full">
+        <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2">How It Works</h2>
+        <h3 className="text-4xl md:text-5xl font-heading font-bold text-base">Our Signature Process</h3>
+      </div>
+
+      <div className="relative z-10 w-full overflow-hidden">
+        <div
+          ref={scrollWrapperRef}
+          className="flex flex-nowrap pl-[10vw] pb-8 gap-8 hide-scrollbar"
+        >
+          {steps.map((step, idx) => {
+            const Icon = iconMap[step.icon] || Sparkles;
+            return (
+              <div
+                key={idx}
+                className="w-[35vw] flex-shrink-0 flex flex-col gap-6"
+              >
+                {step.videoUrl ? (
+                  <div className="relative rounded-2xl h-[380px] flex-shrink-0 border border-secondary/50 overflow-hidden bg-primary/80 backdrop-blur-md shadow-2xl">
+                    <video
+                      src={step.videoUrl}
+                      poster={step.posterUrl}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="none"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-primary/80 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-secondary/50 flex flex-col justify-between group hover:border-[var(--secondary-color)] transition-colors h-[380px]">
+                    <div>
+                      <div className="flex justify-between items-start mb-12">
+                        <span className="text-6xl font-black text-[#F5F1EA]/10 group-hover:text-[#F5F1EA]/20 transition-colors font-heading tracking-tighter">
+                          {step.step}
+                        </span>
+                        <div className="w-16 h-16 rounded-full bg-primary/50 flex items-center justify-center text-secondary">
+                          <Icon className="w-8 h-8" />
+                        </div>
+                      </div>
+                      <h4 className="text-2xl font-bold font-heading mb-4 text-base">{step.title}</h4>
+                      <p className="text-secondary text-lg leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                )}
+
+                {step.videoUrl && (
+                  <div className="px-2">
+                    <h4 className="text-2xl font-bold font-heading mb-2 text-base">{step.title}</h4>
+                    <p className="text-secondary text-lg leading-relaxed">{step.description}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+===== victory-collision.config.ts (processSteps section) =====
+import { SiteConfig } from '../types';
+
+/*
+ * TODO FOR BUSINESS OWNER:
+ * 1. Confirm hoursOfOperation
+ * 2. Provide a real Google Review Link (googleReviewLink)
+ * 3. Provide a real Google Maps Embed URL (googleMapsEmbedUrl)
+ * 4. Provide Team Member details (names, roles, photos)
+ * 5. Provide real Testimonials from Google Reviews
+ * 6. Provide Gallery Images (Before/After photos)
+ * 7. Provide Logo image file (replace /images/logo-placeholder.png)
+ * 8. Provide specific Pricing (currently using "Free Estimate" or "Call for quote")
+ * 9. Provide Hero image/video and Service photos if desired
+ */
+
+export const victoryCollisionConfig: SiteConfig = {
+  businessName: "Victory Collision & Auto Repair",
+  tagline: "Expert Collision & Auto Repair.",
+  logoUrl: "/images/logo-placeholder.png", // TODO: Need real logo
+  phone: "(516) 830-5997",
+  email: "info@victorycollision.com", // Placeholder
+  address: "2215 Jericho Tpke",
+  city: "New Hyde Park",
+  state: "NY",
+  zip: "11040",
+  serviceArea: ["New Hyde Park", "Floral Park", "Garden City Park", "Mineola"],
+  hoursOfOperation: "Mon-Fri: 8:00am - 6:00pm, Sat: 9:00am - 2:00pm", // TODO: Confirm with owner
+  
+  brandColors: {
+    primary: "#1A1815", // dark-grey
+    secondary: "#A8A093", // gray text
+    accent: "#facc15", // yellow-400
+  },
+  
+  heroImage: "https://images.unsplash.com/photo-1599256621730-535171e28f32?w=1600&q=80", // Placeholder Unsplash
+  heroImageAlt: "Auto mechanic working on an engine in a professional shop",
+  heroAnimationMode: 'repair',
+  
+  googleRating: 5.0,
+  googleReviewCount: 10,
+  googleReviewLink: "#TODO-GOOGLE-REVIEW-LINK", // TODO
+  googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3023.005269421564!2d-73.66863612372804!3d40.73990957138948!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c263e517220309%3A0xd745a293f6023a5b!2sVictory%20Collision%20%26%20Auto%20Repair!5e0!3m2!1sen!2sin!4v1790332604421!5m2!1sen!2sin",
+  
+  trustSignals: {
+    yearsInBusiness: 1, // TODO: Confirm years in business
+    aseCertified: true,
+    bbbRating: "A+",
+    warrantyText: "Quality warranty on collision bodywork and paint.",
+    insuredAndBonded: true,
+    estimateBeforeWorkPolicy: true,
+  },
+  
+  services: [
+    {
+      slug: "collision-repair",
+      name: "Collision Repair",
+      shortDescription: "Full-service auto body and collision repair to get your vehicle back to factory condition.",
+      longDescription: "From minor fender benders to major collision damage, our expert technicians use advanced tools and techniques to restore the structural integrity and appearance of your vehicle.",
+      priceRange: "Free Estimate",
+      image: "/images/services/brakes.jpg",
+      faqs: [
+        { question: "Do you work with my insurance company?", answer: "Yes, we work directly with all major insurance companies to handle your claim efficiently." },
+        { question: "How long will the repair take?", answer: "Repair times vary based on the extent of damage and parts availability. We will provide an estimated timeline with your free quote." }
+      ]
+    },
+    {
+      slug: "dent-bumper-repair",
+      name: "Dent & Bumper Repair",
+      shortDescription: "Fast, seamless repairs for dents, dings, and cracked bumpers.",
+      longDescription: "Whether it's a parking lot ding or a cracked bumper, we offer paintless dent repair and expert plastic welding/refinishing to make your car look flawless again.",
+      priceRange: "Free Estimate",
+      image: "/images/services/interior-detailing.jpg",
+      faqs: [
+        { question: "Can you fix a plastic bumper?", answer: "Yes, we specialize in repairing and refinishing plastic bumpers without having to replace the entire part when possible." }
+      ]
+    },
+    {
+      slug: "paint-matching-refinishing",
+      name: "Paint Matching & Refinishing",
+      shortDescription: "Computerized color matching for a flawless finish.",
+      longDescription: "We utilize advanced computerized paint matching systems to ensure the new paint blends perfectly with your vehicle's original color, followed by professional clear coating for lasting durability.",
+      priceRange: "Call for quote",
+      image: "/images/services/ceramic-coating.jpg",
+      faqs: [
+        { question: "Will the new paint match exactly?", answer: "Absolutely. Our computerized color matching technology ensures a seamless blend with your existing paint." }
+      ]
+    },
+    {
+      slug: "general-auto-repair",
+      name: "General Auto Repair & Diagnostics",
+      shortDescription: "Comprehensive mechanical repair and computer diagnostics.",
+      longDescription: "Beyond bodywork, our shop offers full mechanical services. From check engine lights and brake replacements to suspension repairs, we ensure your vehicle is safe and running smoothly.",
+      priceRange: "Call for quote",
+      image: "/images/services/diagnostics.jpg",
+      faqs: [
+        { question: "Do you do mechanical work as well as body work?", answer: "Yes! We are a full-service shop equipped to handle both collision repair and general mechanical diagnostics/repairs." }
+      ]
+    }
+  ],
+  
+  galleryImages: [
+    {
+      beforeUrl: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80",
+      afterUrl: "https://images.unsplash.com/photo-1600049449015-772c72b226e6?auto=format&fit=crop&q=80",
+      alt: "Collision Repair Before and After"
+    }
+  ],
+  teamMembers: [
+    {
+      name: "Mike Johnson",
+      photo: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80",
+      role: "Lead Technician",
+      certifications: ["ASE Certified Master Tech"]
+    }
+  ],
+  testimonials: [
+    {
+      name: "Sarah T.",
+      rating: 5,
+      text: "Victory Collision did an amazing job fixing my car after a fender bender. It looks brand new! Highly recommend them.",
+      date: "2024-05-12",
+      service: "Collision Repair"
+    },
+    {
+      name: "James D.",
+      rating: 5,
+      text: "Fast, professional, and honest. They handled my insurance claim and made the whole process stress-free.",
+      date: "2024-03-28",
+      service: "Dent Repair"
+    }
+  ],
+  processSteps: [
+    { step: "01", title: "Estimate & Approval", description: "We provide a thorough, free estimate and work directly with your insurance company.", icon: "ClipboardList", videoUrl: "/videos/intake.mp4", posterUrl: "/images/gallery/home-before.jpg" },
+    { step: "02", title: "Disassembly & Repair", description: "Our expert technicians dismantle the damaged area and repair the structural integrity of your vehicle.", icon: "Shield", videoUrl: "/videos/prep.mp4", posterUrl: "/images/gallery/paint-correction-before.jpg" },
+    { step: "03", title: "Paint & Refinish", description: "We use computerized color matching to ensure a flawless finish that perfectly matches your factory paint.", icon: "Sparkles", videoUrl: "/videos/refine.mp4", posterUrl: "/images/gallery/paint-correction-after.jpg" },
+    { step: "04", title: "Final Inspection", description: "Every vehicle undergoes a rigorous quality check before it is returned to you.", icon: "CheckCircle", videoUrl: "/videos/hero.mp4", posterUrl: "/images/hero-mercedes.png" }
+  ],
+  pricingPackages: [
+    {
+      name: "Minor Dent Repair",
+      price: "Starting at $150",
+      features: ["Paintless Dent Repair (PDR)", "Same-Day Service", "No Paint Required", "Lifetime Warranty"]
+    },
+    {
+      name: "Bumper Replacement",
+      price: "Call for Quote",
+      isPopular: true,
+      features: ["OEM or Aftermarket Parts", "Computerized Paint Matching", "Seamless Installation", "Insurance Assistance"]
+    },
+    {
+      name: "Full Collision Repair",
+      price: "Free Estimate",
+      features: ["Frame Straightening", "Complete Body Work", "Custom Paint Matching", "Direct Insurance Billing"]
+    }
+  ],
+  socialLinks: {},
+  blogPosts: []
+};
+
+
+===== src\app\page.tsx =====
+import Hero from "@/components/sections/Hero";
+import { siteConfig } from "@/config/site.config";
+import Link from "next/link";
+import { ShieldCheck, Star, Award, CheckCircle } from "lucide-react";
+import AnimatedCounter from "@/components/animations/AnimatedCounter";
+import TiltCard from "@/components/animations/TiltCard";
+import MagneticButton from "@/components/animations/MagneticButton";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import ProcessTimeline from "@/components/sections/ProcessTimeline";
+import PricingTable from "@/components/sections/PricingTable";
+import TrustBadges from "@/components/sections/TrustBadges";
+import ReviewSummary from "@/components/sections/ReviewSummary";
+import FeaturedTransformationSection from "@/components/sections/FeaturedTransformationSection";
+
+export default function Home() {
+  return (
+    <>
+      <Hero />
+      
+      {/* Services Overview */}
+      <section className="py-24 bg-[#1A1815]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-4">Our Services</h2>
+            <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+              Professional, high-quality automotive care tailored to your vehicle's needs.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {siteConfig.services.map((service) => (
+              <TiltCard key={service.slug}>
+                <Link href={`/services/${service.slug}`} className="group block h-full">
+                  <div className="bg-[#24211D] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all h-full flex flex-col border border-[#38332C] hover:border-accent/40">
+                    <div className="relative h-64 overflow-hidden">
+                      <div className="absolute inset-0 bg-[#1A1815]" />
+                      <img 
+                        src={service.image} 
+                        alt={service.name} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute bottom-4 left-4">
+                        <span className="text-[#F5F1EA] font-bold px-3 py-1 rounded-full text-sm backdrop-blur-md bg-black/40 border border-white/10">
+                          {service.priceRange}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-8 flex flex-col flex-grow">
+                      <h3 className="text-2xl font-heading font-bold text-[#F5F1EA] mb-3">{service.name}</h3>
+                      <p className="text-[#A8A093] mb-6 flex-grow leading-relaxed">{service.shortDescription}</p>
+                      <span className="text-accent font-medium group-hover:text-[#F5F1EA] transition-colors inline-flex items-center">
+                        Learn More &rarr;
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <TrustBadges signals={siteConfig.trustSignals} />
+
+      {/* Before/After Showcase */}
+      <section className="py-24 bg-[#1A1815] border-b border-[#38332C] overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-4">See the Difference</h2>
+            <p className="text-xl text-[#A8A093] max-w-2xl mx-auto">
+              Swipe the slider to see how our premium detailing transforms vehicles.
+            </p>
+          </div>
+          <div className="shadow-2xl rounded-2xl">
+            <BeforeAfterSlider 
+              beforeImage={siteConfig.galleryImages[0]?.beforeUrl || "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80"}
+              afterImage={siteConfig.galleryImages[0]?.afterUrl || "https://images.unsplash.com/photo-1600049449015-772c72b226e6?auto=format&fit=crop&q=80"}
+              beforeLabel="Before"
+              afterLabel="After"
+            />
+          </div>
+        </div>
+      </section>
+
+      <ProcessTimeline steps={siteConfig.processSteps || []} />
+
+      {/* Featured Transformation Case Study removed per user request */}
+
+      <PricingTable packages={siteConfig.pricingPackages || []} />
+
+      {/* Testimonials */}
+      <section className="py-24 bg-[#1A1815] text-[#F5F1EA] relative z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-sm font-bold tracking-widest text-accent uppercase mb-2 leading-loose pt-1">Testimonials</h2>
+            <h3 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-[#F5F1EA]">What Our Clients Say</h3>
+          </div>
+          
+          <ReviewSummary 
+            rating={siteConfig.googleRating || 5} 
+            count={siteConfig.googleReviewCount || 0} 
+            link={siteConfig.googleReviewLink} 
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            {siteConfig.testimonials.map((testimonial, i) => (
+              <TiltCard key={i}>
+                <div className="bg-[#24211D] p-8 rounded-2xl border border-[#38332C] hover:border-accent/30 transition-colors h-full flex flex-col shadow-lg">
+                  <div className="flex items-center mb-4 space-x-1">
+                    {[...Array(testimonial.rating)].map((_, j) => (
+                      <Star key={j} className="w-5 h-5 text-accent fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-[#E6E1D8] italic mb-6 leading-relaxed flex-grow">"{testimonial.text}"</p>
+                  <div className="mt-auto">
+                    <p className="font-bold text-[#F5F1EA] font-heading">{testimonial.name}</p>
+                    <p className="text-sm text-[#A8A093]">{testimonial.service} â€¢ {new Date(testimonial.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </TiltCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 relative z-50 bg-[#141210] border-t border-[#38332C]">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-heading font-bold text-[#F5F1EA] mb-6">Ready to get started?</h2>
+          <p className="text-xl text-[#A8A093] mb-10">
+            Book your appointment today or give us a call for a free estimate.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <MagneticButton>
+              <Link href="/contact" className="px-8 py-4 bg-accent text-[#1A1815] rounded-full font-bold text-lg transition-all hover:brightness-110 shadow-xl w-full sm:w-auto block">
+                Get a Free Quote
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <a href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`} className="px-8 py-4 border-2 border-[#F5F1EA]/30 text-[#F5F1EA] rounded-full font-bold text-lg hover:bg-white/10 transition-colors w-full sm:w-auto block">
+                Call {siteConfig.phone}
+              </a>
+            </MagneticButton>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+
+===== src\config\types.ts =====
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
+export interface Service {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  longDescription: string;
+  priceRange: string;
+  image: string;
+  faqs: ServiceFaq[];
+  serviceIncludes?: string[];
+  beforeImage?: string;
+  afterImage?: string;
+  processSteps?: { step: string; title: string; description: string; icon: string; videoUrl?: string; posterUrl?: string; }[];
+}
+
+export interface Testimonial {
+  name: string;
+  rating: number; // 1-5
+  text: string;
+  date: string;
+  service: string;
+}
+
+export interface TeamMember {
+  name: string;
+  photo: string;
+  role: string;
+  certifications: string[];
+}
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  content: string; // Markdown or HTML string
+}
+
+export interface FeaturedTransformation {
+  title: string;
+  vehicleDescription: string;
+  story: string;
+  beforeImage: string;
+  afterImage: string;
+  servicesUsed: { name: string; slug: string }[];
+  testimonialQuote?: string;
+  testimonialAuthor?: string;
+}
+
+export interface BeforeAfterImage {
+  beforeUrl: string;
+  afterUrl: string;
+  alt: string;
+}
+
+export interface SiteConfig {
+  businessName: string;
+  tagline: string;
+  logoUrl: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  serviceArea: string[];
+  hoursOfOperation: string;
+  
+  fonts?: {
+    heading: string;
+    body: string;
+  };
+
+  brandColors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    neutralBase?: string;
+  };
+  
+  heroImage: string;
+  heroImageAlt?: string;
+  heroVideoUrl?: string;
+  heroVideoFallback?: string;
+  heroAnimationMode?: 'detailing' | 'repair';
+  
+  galleryImages: BeforeAfterImage[];
+  teamMembers: TeamMember[];
+  services: Service[];
+  featuredTransformation?: FeaturedTransformation;
+  
+  certifications?: { name: string; logo: string }[];
+  processSteps?: { step: string; title: string; description: string; icon: string; videoUrl?: string; posterUrl?: string; }[];
+  pricingPackages?: { name: string; price: string; isPopular?: boolean; features: string[] }[];
+  
+  trustSignals: {
+    yearsInBusiness: number;
+    aseCertified: boolean;
+    bbbRating: string;
+    warrantyText: string;
+    insuredAndBonded: boolean;
+    estimateBeforeWorkPolicy: boolean;
+  };
+  
+  testimonials: Testimonial[];
+  
+  googleRating?: number;
+  googleReviewCount?: number;
+  googleReviewLink: string;
+  googleMapsEmbedUrl: string;
+  socialLinks: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    youtube?: string;
+  };
+  
+  blogPosts: BlogPost[];
+}
+
